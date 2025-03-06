@@ -1,0 +1,380 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+<div class=" mt-5">
+    <form method="get">
+        <div class="row">
+            <div class="col-6 col-md-8 col-lg-10">
+                <h1>Sök Företag</h1>
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Sök</button>
+                </div>
+            </div>
+            <!-- Land -->
+            <div class="col-6 col-md-4 col-lg-2">
+                <label for="land">Land</label>
+                <select name="land" class="form-select form-select-lg mb-3" aria-label="Search Country">
+                    {% for land in lander %}
+                    <option value="{{ land.id }}" {% if land.id|stringformat:"s" in request.GET.land %}selected{% endif %}>{{ land.namn }}</option>                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <!-- Lan och Stad -->
+        <div class="row bg-light p-3 rounded">
+            <div class="col-md-4">
+                <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLanCity" aria-expanded="true" aria-controls="collapseOne">
+                                VÄLJ PLATSER
+                            </button>
+                        </h2>
+                        <div id="collapseLanCity" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <div class="form-check">
+                                    <div class="card bg-body-tertiary border-0">
+                                        {% for lan in lan|dictsort:"namn" %}
+                                        <div class="accordion-item">
+                                            <div class="d-flex align-items-center">
+                                                <!-- Välj alla-knappen -->
+                                                <input type="checkbox" class="btn-check lan-checkbox" id="lan-{{ lan.id }}" data-lan-id="{{ lan.id }}">
+                                                <label class="btn btn btn-outline-primary me-2" for="lan-{{ lan.id }}">Välj</label>
+
+                                                <!-- Accordion-knappen -->
+                                                <h2 class="accordion-header flex-grow-1 mb-0" id="heading-{{ lan.id }}">
+                                                    <button class="accordion-button w-100" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ lan.id }}" aria-expanded="false" aria-controls="collapse-{{ lan.id }}">
+                                                        {{ lan.namn }}
+                                                    </button>
+                                                </h2>
+                                            </div>
+
+                                            <!-- Accordion-innehåll -->
+                                            <div id="collapse-{{ lan.id }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ lan.id }}">
+                                                <div class="accordion-body">
+                                                    {% for stad in lan.stader.all|dictsort:"namn" %}
+                                                    <input type="checkbox" class="btn-check stad-checkbox" id="stad-{{ stad.id }}" name="stad" value="{{ stad.id }}" data-lan-id="{{ lan.id }}">
+                                                    <label class="btn btn-outline-primary mt-1 w-100" for="stad-{{ stad.id }}">
+                                                        {{ stad.namn }}
+                                                    </label>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+            </div>
+
+            <!-- Verksamhetsområde -->
+            <div class="col-md-4">
+                <div class="accordion" id="accordionExampleOmrade">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOmrade">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOmrade" aria-expanded="true" aria-controls="collapseOmrade">
+                                VÄLJ VERKSAMHETSOMRÅDE
+                            </button>
+                        </h2>
+                        <div id="collapseOmrade" class="accordion-collapse collapse" aria-labelledby="headingOmrade" data-bs-parent="#accordionExampleOmrade">
+                            <div class="accordion-body">
+                                <div class="form-check">
+                                    {% for omrade in omraden|dictsort:"namn" %}
+                                    <div class="d-flex align-items-center accordion-item py-2">
+                                        <input type="checkbox" class="btn-check omrade-checkbox" id="omrade-{{ omrade.id }}" name="omrade" value="{{ omrade.id }}">
+                                        <label class="btn btn btn-outline-primary me-2" for="omrade-{{ omrade.id }}">Välj</label>
+                                        <span>{{ omrade.namn }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Storlek -->
+            <div class="col-md-4">
+                <div class="accordion" id="accordionExampleStorlek">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingStorlek">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStorlek" aria-expanded="true" aria-controls="collapseStorlek">
+                                VÄLJ STORLEK
+                            </button>
+                        </h2>
+                        <div id="collapseStorlek" class="accordion-collapse collapse" aria-labelledby="headingStorlek" data-bs-parent="#accordionExampleStorlek">
+                            <div class="accordion-body">
+                                <div class="form-check">
+                                    {% for storlek in storlekar|dictsort:"namn" %}
+                                    <div class="d-flex align-items-center accordion-item py-2">
+                                        <input type="checkbox" class="btn-check storlek-checkbox" id="storlek-{{ storlek.id }}" name="storlek" value="{{ storlek.id }}">
+                                        <label class="btn btn btn-outline-primary me-2" for="storlek-{{ storlek.id }}">Välj</label>
+                                        <span>{{ storlek.namn }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+
+    {% if request.GET %}
+    {% if resultat %}
+    <div class="container-fluid row bg-light p-3 rounded mt-3">
+        <h2>Resultat</h2>
+        <button id="select-all" class="btn btn-secondary mb-2">Välj alla</button>
+        <!--Skapa projekt-->
+        <button type="button" class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#addProjectModal">Lägg till projekt</button>
+        <!--Skicka till projekt-->
+        <div class="dropdown mb-2">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="send-to-project" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Skicka till projekt
+            </button>
+            <div class="dropdown-menu" aria-labelledby="send-to-project">
+                {% for project in projects %}
+                <a class="dropdown-item send-to-project" href="#" data-project-id="{{ project.id }}">{{ project.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="select-all-checkbox"></th>
+                    <th>Företagsnamn</th>
+                    <th>Verksamhetsområde</th>
+                    <th>Storlek</th>
+                    <th>Projekt</th> <!-- Ny kolumn för projekt -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for company in resultat %}
+                <tr>
+                    <td><input type="checkbox" class="company-checkbox" value="{{ company.id }}"></td>
+                    <td>{{ company.namn }}</td>
+                    <td>{% for omrade in company.omraden.all %}{{ omrade.namn }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                    <td>{{ company.storlek.namn }}</td>
+                    <td>
+                        {% if company.project_set.all %}
+                        {% for project in company.project_set.all %}
+                        {{ project.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                        {% else %}
+                        Inga projekt
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+
+<!-- Modal för att lägga till projekt -->
+<div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProjectModalLabel">Lägg till projekt</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addProjectForm">
+                    <div class="mb-3">
+                        <label for="projectName" class="form-label">Projektnamn</label>
+                        <input type="text" class="form-control" id="projectName" name="projectName" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Lägg till</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const lanCheckboxes = document.querySelectorAll('.lan-checkbox');
+        const stadCheckboxes = document.querySelectorAll('.stad-checkbox');
+        const omradeCheckboxes = document.querySelectorAll('.omrade-checkbox');
+        const storlekCheckboxes = document.querySelectorAll('.storlek-checkbox');
+        //Select rows & send to project
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        const companyCheckboxes = document.querySelectorAll('.company-checkbox');
+        const selectAllButton = document.getElementById('select-all');
+        const sendToProjectButtons = document.querySelectorAll('.send-to-project');
+        const addProjectForm = document.getElementById('addProjectForm');
+        const projectDropdownMenu = document.querySelector('.dropdown-menu[aria-labelledby="send-to-project"]');
+
+        // När län-knappen klickas
+        lanCheckboxes.forEach(lan => {
+            lan.addEventListener('change', function () {
+                const lanId = lan.getAttribute('data-lan-id');
+                const stader = document.querySelectorAll(`.stad-checkbox[data-lan-id="${lanId}"]`);
+
+                stader.forEach(stad => {
+                    stad.checked = lan.checked;
+                    stad.nextElementSibling.classList.toggle('active', lan.checked);
+                });
+            });
+        });
+
+        // När stad-knappen klickas
+        stadCheckboxes.forEach(stad => {
+            stad.addEventListener('change', function () {
+                stad.nextElementSibling.classList.toggle('active', stad.checked);
+
+                const lanId = stad.getAttribute('data-lan-id');
+                const lan = document.querySelector(`.lan-checkbox[data-lan-id="${lanId}"]`);
+                const allInLan = document.querySelectorAll(`.stad-checkbox[data-lan-id="${lanId}"]`);
+                const selected = Array.from(allInLan).every(el => el.checked);
+
+                lan.checked = selected;
+                lan.nextElementSibling.classList.toggle('active', selected);
+            });
+        });
+
+        // När verksamhetsområde-knappen klickas
+        omradeCheckboxes.forEach(omrade => {
+            omrade.addEventListener('change', function () {
+                omrade.nextElementSibling.classList.toggle('active', omrade.checked);
+            });
+        });
+
+        // När storlek-knappen klickas
+        storlekCheckboxes.forEach(storlek => {
+            storlek.addEventListener('change', function () {
+                storlek.nextElementSibling.classList.toggle('active', storlek.checked);
+            });
+        });
+
+        // Välj alla företag
+        selectAllButton.addEventListener('click', function () {
+            companyCheckboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        });
+
+        // Skicka till projekt
+        sendToProjectButtons.forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                const projectId = button.getAttribute('data-project-id');
+                const selectedCompanies = Array.from(companyCheckboxes)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.value);
+
+                if (selectedCompanies.length > 0) {
+                    fetch("{% url 'add_companies_to_project' %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({
+                            project_id: projectId,
+                            company_ids: selectedCompanies
+                        })
+                    }).then(response => {
+                        if (response.ok) {
+                            // Visa en alert
+                            const alertContainer = document.createElement('div');
+                            alertContainer.classList.add('alert', 'alert-success', 'alert-dismissible', 'fade', 'show');
+                            alertContainer.setAttribute('role', 'alert');
+                            alertContainer.innerHTML = `
+                                Företagen har lagts till i projektet, klicka på ok för att uppdatera vyn!
+                                <button type="button" class="btn btn-primary" id="alert-ok-button">OK</button>
+                            `;
+                            document.body.prepend(alertContainer);
+
+							// Lägg till en event listener för att uppdatera tabellen när alerten stängs
+							alertContainer.querySelector('#alert-ok-button').addEventListener('click', function () {
+								alertContainer.remove();
+								location.reload();
+                            });
+                        } else {
+                            alert('Ett fel uppstod. Försök igen.');
+                        }
+                    });
+                } else {
+                    alert('Välj minst ett företag.');
+                }
+            });
+        });
+
+        // Lägg till projekt
+        addProjectForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const projectName = document.getElementById('projectName').value;
+
+            fetch("{% url 'add_project' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    name: projectName
+                })
+            }).then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Lägg till det nya projektet i dropdown-menyn
+                    const newProject = document.createElement('a');
+                    newProject.classList.add('dropdown-item', 'send-to-project');
+                    newProject.href = '#';
+                    newProject.setAttribute('data-project-id', data.project.id);
+                    newProject.textContent = data.project.name;
+                    projectDropdownMenu.appendChild(newProject);
+
+                    // Stäng modalen
+                    const addProjectModal = new bootstrap.Modal(document.getElementById('addProjectModal'));
+                    addProjectModal.hide();
+
+                    // Visa en alert
+                    const alertContainer = document.createElement('div');
+                    alertContainer.classList.add('alert', 'alert-success', 'alert-dismissible', 'fade', 'show');
+                    alertContainer.setAttribute('role', 'alert');
+                    alertContainer.innerHTML = `
+                        Ditt nya projekt är sparat!
+                        <button type="button" class="btn btn-primary" id="alert-ok-buttonNew">OK</button>
+                    `;
+                    document.body.prepend(alertContainer);
+
+                    // Ta bort alerten efter några sekunder
+                    setTimeout(() => {
+                        alertContainer.remove();
+                    }, 3000);
+
+                    // Rensa formuläret
+                    addProjectForm.reset();
+                } else {
+                    alert('Ett fel uppstod. Försök igen.');
+                }
+            });
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

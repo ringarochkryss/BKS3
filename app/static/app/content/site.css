@@ -1,0 +1,112 @@
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    background-color: white; /*lightblue*/
+}
+
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.btn-outline-primary {
+    color: lightslategrey;
+    background-color: white;
+    border: none;
+    /*    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+*/ box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 5px 12px 0 rgba(0,0,0,0.19);
+    box-shadow: 2px 2px 5px 0px rgba(219,213,242,1);
+}
+
+    .btn-outline-primary:hover {
+        background-color: #132fbd !important;
+        color: #fff !important;
+    }
+
+.popup-button {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 1em;
+    text-transform: uppercase;
+    color: white;
+    padding: 1em 3em;
+    background-size: 200% auto;
+    color: white;
+    box-shadow: 0 4px 6px rgba(50,50,93,.11), 0 1px 3px rgba(0,0,0,.08);
+    background-image: linear-gradient(to right, #895cf2 0%, #ffabf4 50%, #895cf2 100%);
+    transition: 0.5s;
+}  
+    .popup-button:hover
+    {
+        background-position: right center;
+    }
+ 
+
+
+
+/*.btn-outline-primary.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}*/
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+/* styles for validation helpers */
+.field-validation-error {
+    color: #b94a48;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+input.input-validation-error {
+    border: 1px solid #b94a48;
+}
+
+input[type="checkbox"].input-validation-error {
+    border: 0 none;
+}
+
+.validation-summary-errors {
+    color: #b94a48;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+.accordion-body {
+    max-height: 250px;
+    overflow: auto;
+}
+
+/*Scrollbar*/
+/* width */
+::-webkit-scrollbar {
+    width: 20px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: red;
+    border-radius: 10px;
+}
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #b30000;
+    } 

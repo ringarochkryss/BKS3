@@ -1,0 +1,54 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<h2>{{ title }}.</h2>
+<p>{{ message }}</p>
+
+
+<div class="container row">
+	<!--Roller-->
+	<div class="col-12 col-md-4 col-xl-3">
+		<div class="card" style="width: 18rem;">
+			<div class="card-header">
+				<h5 class="card-title">ANVÄNDARE</h5>
+			</div>
+			<ul class="list-group list-group-flush">
+				<li class="list-group-item">Användare</li>
+				<li class="list-group-item">Roller</li>
+			</ul>
+		</div>
+	</div>
+	
+	<!--Företag-->
+	<div class="col-12 col-md-4 col-xl-3">
+		<div class="card" style="width: 18rem;">
+			<div class="card-header">
+				<h5 class="card-title">FÖRETAG</h5>
+			</div>
+			<ul class="list-group list-group-flush">
+				<li class="list-group-item">Företag</li>
+				<li class="list-group-item">Företagsstorlekar</li>
+				<li class="list-group-item">Verksamhetsområden</li>
+				<li class="list-group-item">Företagsstorlekar</li>
+			</ul>
+		</div>
+	</div>
+
+	<!--Projekt-->
+	<div class="col-12 col-md-4 col-xl-3">
+		<div class="card" style="width: 18rem;">
+			<div class="card-header">
+				<h5 class="card-title">PROJEKT</h5>
+			</div>
+			<ul class="list-group list-group-flush">
+				<li class="list-group-item">Projekt</li>
+			</ul>
+		</div>
+	</div>
+
+</div>
+
+
+
+{% endblock %}
