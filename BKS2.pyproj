@@ -4619,6 +4619,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app\templates\app\administrator.html" />
+    <Content Include="app\templates\app\company_list.html" />
     <Content Include="app\templates\app\projects.html" />
     <Content Include="app\templates\app\sok.html" />
     <Content Include="env\Lib\site-packages\asgiref-3.8.1.dist-info\INSTALLER" />
@@ -9722,7 +9723,8 @@
     <Content Include="env\Scripts\python.exe" />
     <Content Include="env\Scripts\pythonw.exe" />
     <Content Include="env\Scripts\sqlformat.exe" />
-    <Content Include="projects\templates\projects\index.html" />
+    <Content Include="projects\templates\projects\overview.html" />
+    <Content Include="projects\templates\projects\projectlist.html" />
     <Content Include="requirements.txt" />
     <Content Include="db.sqlite3" />
     <Content Include="app\static\app\content\bootstrap.css" />

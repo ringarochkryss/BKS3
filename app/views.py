@@ -3,7 +3,6 @@ Definition of views.
 """
 
 from datetime import datetime
-import json
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -11,7 +10,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest
 from companies.models import Company, VerksamhetsOmraden, ForetagsStorlek
 from locations.models import Stad, Lan, Land
-from projects.models import Project  # Lägg till denna import
+from projects.models import Project
+import json
 
 def home(request):
     """Renders the home page."""
@@ -51,6 +51,19 @@ def about(request):
         }
     )
 
+def company_list(request):
+    """Renders the about page."""
+    assert isinstance(request, HttpRequest)
+    return render(
+        request,
+        'app/company_list.html',
+        {
+            'title':'company_list',
+            'message':'Your application company_list page.',
+            'year':datetime.now().year,
+        }
+    )
+
 def administrator(request):
     assert isinstance(request, HttpRequest)
     return render(
@@ -67,10 +80,10 @@ def projects(request):
     assert isinstance(request, HttpRequest)
     return render(
         request,
-        'app/projects.html',
+        'app/projects222.html',
         {
             'title':'Projekt',
-            'message':'Mina projekt.',
+            'message':'Mina projekt222.',
             'year':datetime.now().year,
         }
     )

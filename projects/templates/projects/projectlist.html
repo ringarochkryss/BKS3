@@ -1,0 +1,183 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<h2>{{ title }}.</h2>
+<h3>{{ message }}</h3>
+
+<div class="container">
+	<h2>Projektlista</h2>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>Namn</th>
+				<th>Startdatum</th>
+				<th>Slutdatum</th>
+				<th>Företag</th>
+				<th>Skapad av</th>
+				<th>Arkiverad</th>
+				<th>Åtgärder</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for project in projects %}
+			<tr>
+				<td>{{ project.name }}</td>
+				<td>{{ project.start_date }}</td>
+				<td>{{ project.end_date }}</td>
+				<td>
+					{% for company in project.companies.all %}
+					{{ company.name }}{% if not forloop.last %}, {% endif %}
+					{% endfor %}
+				</td>
+				<td>{{ project.created_by.username }}</td>
+				<td><input type="checkbox" {% if project.archived %}checked{% endif %} disabled></td>
+				<td>
+					<button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal" data-id="{{ project.id }}" data-name="{{ project.name }}" data-start_date="{{ project.start_date }}" data-end_date="{{ project.end_date }}" data-archived="{{ project.archived }}">Redigera</button>
+					<button class="btn btn-danger btn-sm" onclick="confirmDelete({{ project.id }})">Ta bort</button>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="editModalLabel">Redigera Projekt</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form id="editForm">
+					<input type="hidden" id="editProjectId">
+					<div class="mb-3">
+						<label for="editProjectName" class="form-label">Namn</label>
+						<input type="text" class="form-control" id="editProjectName" required>
+					</div>
+					<div class="mb-3">
+						<label for="editStartDate" class="form-label">Startdatum</label>
+						<input type="date" class="form-control" id="editStartDate">
+					</div>
+					<div class="mb-3">
+						<label for="editEndDate" class="form-label">Slutdatum</label>
+						<input type="date" class="form-control" id="editEndDate">
+					</div>
+					<div class="mb-3 form-check">
+						<input type="checkbox" class="form-check-input" id="editArchived">
+						<label class="form-check-label" for="editArchived">Arkiverad</label>
+					</div>
+					<button type="submit" class="btn btn-primary">Spara ändringar</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Delete Confirmation -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="deleteModalLabel">Bekräfta borttagning</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				Är du säker på att du vill ta bort detta projekt?
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+				<button type="button" class="btn btn-danger" id="confirmDeleteButton">Ta bort</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	function getCookie(name) {
+		let cookieValue = null;
+		if (document.cookie && document.cookie !== '') {
+			const cookies = document.cookie.split(';');
+			for (let i = 0; i < cookies.length; i++) {
+				const cookie = cookies[i].trim();
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+	const csrftoken = getCookie('csrftoken');
+
+	var editModal = document.getElementById('editModal');
+	editModal.addEventListener('show.bs.modal', function (event) {
+		var button = event.relatedTarget;
+		var id = button.getAttribute('data-id');
+		var name = button.getAttribute('data-name');
+		var start_date = button.getAttribute('data-start_date');
+		var end_date = button.getAttribute('data-end_date');
+		var archived = button.getAttribute('data-archived') === 'true';
+
+		var modal = this;
+		modal.querySelector('#editProjectId').value = id;
+		modal.querySelector('#editProjectName').value = name;
+		modal.querySelector('#editStartDate').value = start_date;
+		modal.querySelector('#editEndDate').value = end_date;
+		modal.querySelector('#editArchived').checked = archived;
+	});
+
+	document.getElementById('editForm').addEventListener('submit', function (event) {
+		event.preventDefault();
+		var id = document.getElementById('editProjectId').value;
+		var name = document.getElementById('editProjectName').value;
+		var start_date = document.getElementById('editStartDate').value;
+		var end_date = document.getElementById('editEndDate').value;
+		var archived = document.getElementById('editArchived').checked;
+
+		fetch('{% url "edit_project" %}', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': csrftoken
+			},
+			body: JSON.stringify({
+				id: id,
+				name: name,
+				start_date: start_date,
+				end_date: end_date,
+				archived: archived
+			})
+		}).then(response => {
+			if (response.ok) {
+				location.reload();
+			}
+		});
+	});
+
+	function confirmDelete(id) {
+		var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+		deleteModal.show();
+		document.getElementById('confirmDeleteButton').onclick = function () {
+			fetch('{% url "delete_project" %}', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': csrftoken
+				},
+				body: JSON.stringify({
+					id: id
+				})
+			}).then(response => {
+				if (response.ok) {
+					location.reload();
+				}
+			});
+		};
+	}
+</script>
+
+{% endblock %}
+
