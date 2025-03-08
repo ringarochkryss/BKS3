@@ -27,14 +27,25 @@
                     <li class="nav-item"><a class="nav-link active" href="{% url 'projects222' %}">Projekt</a></li>
                     <li class="nav-item"><a class="nav-link active" href="{% url 'about' %}">Om</a></li>
                     <li class="nav-item"><a class="nav-link active" href="{% url 'contact' %}">Kontakt</a></li>
+                    
                     {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link active" href="{% url 'sok_foretags' %}">Sök</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="{% url 'project_overview' %}">Projektöversikt</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'sok_foretags' %}">Sok</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Projektoversikt
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% for project in projects %}
+                            <li><a class="dropdown-item" href="{% url 'project_overview' project.id %}">{{ project.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
                     <li class="nav-item"><a class="nav-link active" href="{% url 'project_list' %}">Projektlista</a></li>
                     {% endif %}
+
                     {% if user.is_authenticated and user.is_superuser %}
                     <li class="nav-item"><a class="nav-link active" href="{% url 'administrator' %}">Administrator</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="{% url 'company_list' %}">Företagslista</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'company_list' %}">Foretagslista</a></li>
                     {% endif %}
                 </ul>
                 {% include 'app/loginpartial.html' %}
@@ -50,7 +61,7 @@
         </footer>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery (om det behövs) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery (om det behovs) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script> <!-- Popper.js -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap JS -->
     <script src="{% static 'app/scripts/bootstrap.js' %}"></script>

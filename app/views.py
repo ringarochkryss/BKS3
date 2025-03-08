@@ -100,7 +100,7 @@ def add_project(request):
     return JsonResponse({'status': 'success', 'project': {'id': project.id, 'name': project.name}})
 
 
-#Koppla företag till projekt
+#Koppla foretag till projekt
 @login_required
 @require_POST
 def add_companies_to_project(request):
@@ -117,14 +117,14 @@ def add_companies_to_project(request):
 
     return JsonResponse({'status': 'success'})
 
-#Sök företag
+#Sok foretag
 def sok_foretags(request):
     lander = Land.objects.all()
     lan = Lan.objects.prefetch_related('stader').all()
     stader = Stad.objects.all()
     omraden = VerksamhetsOmraden.objects.all()
     storlekar = ForetagsStorlek.objects.all()
-    projects = Project.objects.filter(created_by=request.user)  # Hämta alla projekt skapade av den inloggade användaren
+    projects = Project.objects.filter(created_by=request.user)  # Hamta alla projekt skapade av den inloggade anvandaren
 
     resultat = None
 
@@ -132,7 +132,7 @@ def sok_foretags(request):
         land = request.GET.get('land', None)
         stader_valda = request.GET.getlist('stad')
         omraden_valda = request.GET.getlist('omrade')
-        storlekar_valda = request.GET.getlist('storlek')  # Ändra till getlist för att hantera flera storlekar
+        storlekar_valda = request.GET.getlist('storlek')  # andra till getlist for att hantera flera storlekar
 
         if land or stader_valda or omraden_valda or storlekar_valda:
             resultat = Company.objects.all()

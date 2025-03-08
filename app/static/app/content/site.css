@@ -110,3 +110,8 @@ input[type="checkbox"].input-validation-error {
     ::-webkit-scrollbar-thumb:hover {
         background: #b30000;
     } 
+
+    .red {
+        color:red;
+        background-color:palevioletred;
+    }

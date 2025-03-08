@@ -1,19 +1,22 @@
 {% extends "app/layout.html" %}
 
 {% block content %}
-
 <h2>{{ title }}.</h2>
 <h3>{{ message }}</h3>
 
 <div class="container">
 	<h2>Projektlista</h2>
+
+	<button class="btn btn-secondary mb-3" id="toggleArchived">{% if show_archived %}Dolj Arkiverade{% else %}Visa Arkiverade{% endif %}</button>
+	<button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addProjectModal">Lägg till Projekt</button>
+
 	<table class="table table-bordered">
 		<thead>
 			<tr>
 				<th>Namn</th>
 				<th>Startdatum</th>
 				<th>Slutdatum</th>
-				<th>Företag</th>
+				<th>Foretag</th>
 				<th>Skapad av</th>
 				<th>Arkiverad</th>
 				<th>Åtgärder</th>
@@ -40,6 +43,36 @@
 			{% endfor %}
 		</tbody>
 	</table>
+</div>
+
+
+<!-- Add Project Modal -->
+<div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="addProjectModalLabel">Lägg till Projekt</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form id="addProjectForm">
+					<div class="mb-3">
+						<label for="addProjectName" class="form-label">Namn</label>
+						<input type="text" class="form-control" id="addProjectName" required>
+					</div>
+					<div class="mb-3">
+						<label for="addStartDate" class="form-label">Startdatum</label>
+						<input type="date" class="form-control" id="addStartDate">
+					</div>
+					<div class="mb-3">
+						<label for="addEndDate" class="form-label">Slutdatum</label>
+						<input type="date" class="form-control" id="addEndDate">
+					</div>
+					<button type="submit" class="btn btn-primary">Lägg till</button>
+				</form>
+			</div>
+		</div>
+	</div>
 </div>
 
 <!-- Edit Modal -->
@@ -111,6 +144,37 @@
 		return cookieValue;
 	}
 	const csrftoken = getCookie('csrftoken');
+
+	document.getElementById('toggleArchived').addEventListener('click', function () {
+		var showArchived = '{{ show_archived }}' === 'True';
+		var newUrl = new URL(window.location.href);
+		newUrl.searchParams.set('show_archived', !showArchived);
+		window.location.href = newUrl.toString();
+	});
+
+	document.getElementById('addProjectForm').addEventListener('submit', function (event) {
+		event.preventDefault();
+		var name = document.getElementById('addProjectName').value;
+		var start_date = document.getElementById('addStartDate').value;
+		var end_date = document.getElementById('addEndDate').value;
+
+		fetch('{% url "add_project" %}', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': csrftoken
+			},
+			body: JSON.stringify({
+				name: name,
+				start_date: start_date,
+				end_date: end_date
+			})
+		}).then(response => {
+			if (response.ok) {
+				location.reload();
+			}
+		});
+	});
 
 	var editModal = document.getElementById('editModal');
 	editModal.addEventListener('show.bs.modal', function (event) {

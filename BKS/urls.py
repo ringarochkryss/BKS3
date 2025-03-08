@@ -22,10 +22,12 @@ urlpatterns = [
     path('add_project/', views.add_project, name='add_project'),
     
     #Project views
-    path('projects/overview/', project_views.project_overview, name='project_overview'),
+    path('projects/overview/<int:project_id>/', project_views.project_overview, name='project_overview'),
     path('projects/list/', project_views.project_list, name='project_list'), 
     path('edit_project/', project_views.edit_project, name='edit_project'),
     path('delete_project/', project_views.delete_project, name='delete_project'),
+    path('add_project/', project_views.add_project, name='add_project'),
+
 
     #Admin views
     path('admin/', admin.site.urls),

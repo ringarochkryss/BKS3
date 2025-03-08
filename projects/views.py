@@ -1,14 +1,18 @@
-# projects/views.py
+
 from datetime import datetime
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+from companies.models import Company, VerksamhetsOmraden, ForetagsStorlek
 from .models import Project
 import json
 
-def project_overview(request):
+@login_required
+def project_overview(request, project_id):
     assert isinstance(request, HttpRequest)
+    project = get_object_or_404(Project, id=project_id, created_by=request.user)
+    companies = project.companies.all()  
     return render(
         request,
         'projects/overview.html',
@@ -16,13 +20,20 @@ def project_overview(request):
             'title': 'Projektoversikt',
             'message': 'valt projekt.',
             'year': datetime.now().year,
+            'project': project,
+            'companies': companies,  
         }
     )
+
 
 @login_required
 def project_list(request):
     assert isinstance(request, HttpRequest)
-    projects = Project.objects.filter(created_by=request.user)  # Filtrera projekt baserat på inloggad användare
+    show_archived = request.GET.get('show_archived', 'false') == 'true'
+    if show_archived:
+        projects = Project.objects.filter(created_by=request.user)
+    else:
+        projects = Project.objects.filter(created_by=request.user, archived=False)
     return render(
         request,
         'projects/projectlist.html',
@@ -30,9 +41,22 @@ def project_list(request):
             'title': 'Projektlista',
             'message': 'alla dina projekt.',
             'year': datetime.now().year,
-            'projects': projects,  # Skicka projekten till mallen
+            'projects': projects,
+            'show_archived': show_archived,
         }
     )
+
+@login_required
+@require_POST
+def add_project(request):
+    data = json.loads(request.body)
+    project_name = data.get('name')
+    start_date = data.get('start_date')
+    end_date = data.get('end_date')
+
+    project = Project.objects.create(name=project_name, start_date=start_date, end_date=end_date, created_by=request.user)
+
+    return JsonResponse({'status': 'success', 'project': {'id': project.id, 'name': project.name}})
 
 @login_required
 @require_POST

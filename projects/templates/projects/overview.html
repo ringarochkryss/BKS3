@@ -2,8 +2,52 @@
 
 {% block content %}
 
-<h2>{{ title }}.</h2>
-<h3>{{ message }}</h3>
+<div class="container row">
 
+	<h3>{{ project.name }}</h3>
+	<p>
+		{{ project.start_date }} - {{ project.end_date }}
+	</p>
+
+	<div class="col-8">
+		<h4>Foretag</h4>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>Foretagstyp</th>
+					<th>Foretagsnamn</th>
+					<th>Kontaktperson</th>
+					<th>Telefon</th>
+					<th>Email</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for company in companies %}
+				<tr>
+					<td>{% for omrade in company.omraden.all %}{{ omrade.namn }} <i class="{{ omrade.ikon }}"></i>{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+					<td class="red">Name: {{ company.namn }}</td>
+					<td>{{ company.kontaktperson }}</td>
+					<td>{{ company.telefonnummer }}</td>
+					<td>{{ company.epost }}</td>
+				</tr>
+				{% empty %}
+				<tr>
+					<td colspan="5">Inga foretag kopplade till detta projekt.</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="col-4">
+		<h4>Epostlista</h4>
+		<ul>
+			{% for company in companies %}
+			<li>{{ company.epost }}</li>
+			{% endfor %}
+		</ul>
+	</div>
+
+</div>
 
 {% endblock %}

@@ -1705,6 +1705,9 @@
     <Compile Include="BKS\wsgi.py" />
     <Compile Include="projects\admin.py" />
     <Compile Include="projects\apps.py" />
+    <Compile Include="projects\context_processors.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="projects\migrations\__init__.py" />
     <Compile Include="projects\models.py" />
     <Compile Include="projects\tests.py" />

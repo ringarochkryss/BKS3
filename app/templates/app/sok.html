@@ -5,9 +5,9 @@
     <form method="get">
         <div class="row">
             <div class="col-6 col-md-8 col-lg-10">
-                <h1>Sök Företag</h1>
+                <h1>Sok Foretag</h1>
                 <div class="mt-4">
-                    <button type="submit" class="btn btn-primary">Sök</button>
+                    <button type="submit" class="btn btn-primary">Sok</button>
                 </div>
             </div>
             <!-- Land -->
@@ -153,10 +153,10 @@
             <thead>
                 <tr>
                     <th><input type="checkbox" id="select-all-checkbox"></th>
-                    <th>Företagsnamn</th>
+                    <th>Foretagsnamn</th>
                     <th>Verksamhetsområde</th>
                     <th>Storlek</th>
-                    <th>Projekt</th> <!-- Ny kolumn för projekt -->
+                    <th>Projekt</th> <!-- Ny kolumn for projekt -->
                 </tr>
             </thead>
             <tbody>
@@ -184,7 +184,7 @@
     {% endif %}
 </div>
 
-<!-- Modal för att lägga till projekt -->
+<!-- Modal for att lägga till projekt -->
 <div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -260,7 +260,7 @@
             });
         });
 
-        // Välj alla företag
+        // Välj alla foretag
         selectAllButton.addEventListener('click', function () {
             companyCheckboxes.forEach(checkbox => {
                 checkbox.checked = true;
@@ -294,22 +294,22 @@
                             alertContainer.classList.add('alert', 'alert-success', 'alert-dismissible', 'fade', 'show');
                             alertContainer.setAttribute('role', 'alert');
                             alertContainer.innerHTML = `
-                                Företagen har lagts till i projektet, klicka på ok för att uppdatera vyn!
+                                Foretagen har lagts till i projektet, klicka på ok for att uppdatera vyn!
                                 <button type="button" class="btn btn-primary" id="alert-ok-button">OK</button>
                             `;
                             document.body.prepend(alertContainer);
 
-							// Lägg till en event listener för att uppdatera tabellen när alerten stängs
+							// Lägg till en event listener for att uppdatera tabellen när alerten stängs
 							alertContainer.querySelector('#alert-ok-button').addEventListener('click', function () {
 								alertContainer.remove();
 								location.reload();
                             });
                         } else {
-                            alert('Ett fel uppstod. Försök igen.');
+                            alert('Ett fel uppstod. Forsok igen.');
                         }
                     });
                 } else {
-                    alert('Välj minst ett företag.');
+                    alert('Välj minst ett foretag.');
                 }
             });
         });
@@ -361,7 +361,7 @@
                     // Rensa formuläret
                     addProjectForm.reset();
                 } else {
-                    alert('Ett fel uppstod. Försök igen.');
+                    alert('Ett fel uppstod. Forsok igen.');
                 }
             });
         });
