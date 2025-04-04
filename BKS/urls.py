@@ -27,7 +27,7 @@ urlpatterns = [
     path('edit_project/', project_views.edit_project, name='edit_project'),
     path('delete_project/', project_views.delete_project, name='delete_project'),
     path('add_project/', project_views.add_project, name='add_project'),
-
+    path('projects/<int:project_id>/update_status/', project_views.update_status, name='update_status'),
 
     #Admin views
     path('admin/', admin.site.urls),

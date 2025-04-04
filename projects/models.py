@@ -14,11 +14,20 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
-class CompanyProjectStatus(models.TextChoices):
-    SENT_INQUIRY = 'SentInquiry', 'Sent Inquiry'
-    ANSWERED_NO = 'AnsweredNo', 'Answered No'
-    ANSWERED_YES = 'AnsweredYes', 'Answered Yes'
-    SUBMITTED = 'Submitted', 'Submitted'
+class Status(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class ProjectCompany(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    status = models.ForeignKey(Status, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.project.name} - {self.company.namn}: {self.status}"
+
 
 class MyCompanyContact(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='contacts')
@@ -32,6 +41,7 @@ class MyCompanyContact(models.Model):
 
     def __str__(self):
         return self.namn
+
 
 class MyContactInfo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

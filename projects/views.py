@@ -1,18 +1,18 @@
-
 from datetime import datetime
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from companies.models import Company, VerksamhetsOmraden, ForetagsStorlek
-from .models import Project
+from .models import Project, ProjectCompany, Status  # Lägg till Status importen
 import json
 
 @login_required
 def project_overview(request, project_id):
     assert isinstance(request, HttpRequest)
     project = get_object_or_404(Project, id=project_id, created_by=request.user)
-    companies = project.companies.all()  
+    companies = project.companies.all()
+    statuses = Status.objects.all()  # Hämta alla statusar
     return render(
         request,
         'projects/overview.html',
@@ -21,10 +21,10 @@ def project_overview(request, project_id):
             'message': 'valt projekt.',
             'year': datetime.now().year,
             'project': project,
-            'companies': companies,  
+            'companies': companies,
+            'statuses': statuses,  # Lägg till statusar i contexten
         }
     )
-
 
 @login_required
 def project_list(request):
@@ -87,3 +87,21 @@ def delete_project(request):
     project.delete()
 
     return JsonResponse({'status': 'success'})
+
+@login_required
+@require_POST
+def update_status(request, project_id):
+    project = get_object_or_404(Project, id=project_id, created_by=request.user)
+    for company in project.companies.all():
+        status_id = request.POST.get(f'status_{company.id}')
+        if status_id:
+            status = get_object_or_404(Status, id=status_id)
+            ProjectCompany.objects.update_or_create(
+                project=project,
+                company=company,
+                defaults={'status': status}
+            )
+    return redirect('project_overview', project_id=project_id)
+
+
+

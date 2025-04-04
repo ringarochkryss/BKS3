@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div class="container row">
+<div class="row top-jumbo container-fluid glass">
 
 	<h3>{{ project.name }}</h3>
 	<p>
@@ -10,44 +10,58 @@
 	</p>
 
 	<div class="col-8">
-		<h4>Foretag</h4>
-		<table class="table table-bordered">
-			<thead>
-				<tr>
-					<th>Foretagstyp</th>
-					<th>Foretagsnamn</th>
-					<th>Kontaktperson</th>
-					<th>Telefon</th>
-					<th>Email</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for company in companies %}
-				<tr>
-					<td>{% for omrade in company.omraden.all %}{{ omrade.namn }} <i class="{{ omrade.ikon }}"></i>{% if not forloop.last %}, {% endif %}{% endfor %}</td>
-					<td class="red">Name: {{ company.namn }}</td>
-					<td>{{ company.kontaktperson }}</td>
-					<td>{{ company.telefonnummer }}</td>
-					<td>{{ company.epost }}</td>
-				</tr>
-				{% empty %}
-				<tr>
-					<td colspan="5">Inga foretag kopplade till detta projekt.</td>
-				</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-	</div>
+		<form method="post" action="{% url 'update_status' project.id %}">
+			{% csrf_token %}
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Foretagstyp</th>
+						<th>Foretagsnamn</th>
+						<th>Kontaktperson</th>
+						<th>Telefon</th>
+						<th>Email</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for company in companies %}
+					<tr>
+						<td>{% for omrade in company.omraden.all %}{{ omrade.namn }} <i class="{{ omrade.ikon }}"></i>{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+						<td class="red">Name: {{ company.namn }}</td>
+						<td>{{ company.kontaktperson }}</td>
+						<td>{{ company.telefonnummer }}</td>
+						<td>{{ company.epost }}</td>
+						<td>
+							<select name="status_{{ company.id }}" class="form-select">
+								<option value="">Select Status</option>
+								{% for status in statuses %}
+								<option value="{{ status.id }}" {% if company.status.id= =status.id %}selected{% endif %}>{{ status.name }}</option>
+								{% endfor %}
+							</select>
+						</td>
+					</tr>
+					{% empty %}
+					<tr>
+						<td colspan="6">Inga foretag kopplade till detta projekt.</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<button type="submit" class="btn btn-primary">Save Status</button>
+		</form>
 
-	<div class="col-4">
-		<h4>Epostlista</h4>
-		<ul>
-			{% for company in companies %}
-			<li>{{ company.epost }}</li>
-			{% endfor %}
-		</ul>
-	</div>
+		<div class="col-4">
+			<div class="bg-white mp-0">
+				<h4>Epostlista</h4>
+				<ul>
+					{% for company in companies %}
+					<li>{{ company.epost }}</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
 
+	</div>
 </div>
 
 {% endblock %}
