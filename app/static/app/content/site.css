@@ -1,12 +1,92 @@
 body {
-    padding-top: 50px;
-    padding-bottom: 20px;
-    background-color: white; /*lightblue*/
+    background-image: url('../img/karla4.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-color: #f8f9fa;
 }
 
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
+}
+
+h1 {
+    font-family: "Gelasio", serif;
+    letter-spacing: -.02em;
+    text-transform: none;
+    margin-top: 0;
+    font-size: 3.1rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color:#fff;
+}
+
+
+
+h2, h3, h4, h5 {
+    font-family: "Open Sans", sans-serif
+}
+p, small, text {
+    font-family: "Open Sans", sans-serif;
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.frontIcon {
+    color: #fff;
+}
+
+.white {
+    color:#fff;
+}
+
+.circleMd {
+    border: 1px solid #fff;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    display: inline-block;
+    text-align: center;
+    line-height: 50px;
+}
+
+.logostyling {
+    letter-spacing: 5px;
+    font-size:24px;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.greytext {
+    color: #778899;
+}
+
+.top-jumbo {
+    margin-top: 90px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+  /*  text-align: center;
+    justify-items:center;*/
+}
+
+.pill {
+    border-radius:40px!important;
+    padding:2px;
+}
+
+.pillLG {
+    border-radius: 8em !important;
+    padding: 2px;
 }
 
 .btn-outline-primary {
@@ -115,3 +195,38 @@ input[type="checkbox"].input-validation-error {
         color:red;
         background-color:palevioletred;
     }
+
+
+@media screen and (max-width: 991px) {
+    h1 {
+        font-size: 3.06rem;
+        color: black;
+    }
+
+    .lead {
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .glassonSM {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .frontIcon {
+        color: #f03627;
+    }
+
+    .circleMd {
+        border: 1px solid #f03627;
+    }
+
+    #navbarText {
+        background-color: #f03627!important;
+        padding-left:5px;
+    }
+}

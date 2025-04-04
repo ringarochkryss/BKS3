@@ -37,28 +37,25 @@ class Company(models.Model):
 
     # Verksamhetsområden
     omraden = models.ManyToManyField(VerksamhetsOmraden, blank=True)
-
+    kategoriBransch = models.CharField(max_length=100, blank=True, null=True)
     # Bilder
     logotype = models.ImageField(upload_to='company_logos/', blank=True, null=True)
     bild1 = models.ImageField(upload_to='company_images/', blank=True, null=True)
-    bild2 = models.ImageField(upload_to='company_images/', blank=True, null=True)
-    bild3 = models.ImageField(upload_to='company_images/', blank=True, null=True)
+  
 
     # Texter
     payoff = models.CharField(max_length=300, blank=True, null=True)
     text1 = models.TextField(blank=True, null=True)
     text2 = models.TextField(blank=True, null=True)
-    text3 = models.TextField(blank=True, null=True)
 
     # Booleans
     kund = models.BooleanField(default=False)
     underleverantor = models.BooleanField(default=False)
+    konkurs = models.BooleanField(default=False)
 
     # Invoice
     organisationsnummer = models.CharField(max_length=50, blank=True, null=True)
-    adressrad1 = models.CharField(max_length=200, blank=True, null=True)
-    adressrad2 = models.CharField(max_length=200, blank=True, null=True)
-    adressrad3 = models.CharField(max_length=200, blank=True, null=True)
+    adress = models.CharField(max_length=200, blank=True, null=True)
 
     # Payment Information
     betald = models.BooleanField(default=False)
@@ -75,3 +72,10 @@ class Company(models.Model):
     def __str__(self):
         return self.namn
 
+class Account(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='project_numbers')
+    omrade = models.ForeignKey(VerksamhetsOmraden, on_delete=models.CASCADE, related_name='project_numbers')
+    account = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"{self.company.namn} - {self.omrade.namn}: {self.project_number}"

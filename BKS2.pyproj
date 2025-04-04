@@ -1720,6 +1720,7 @@
     <Folder Include="app\static\" />
     <Folder Include="app\static\app\" />
     <Folder Include="app\static\app\content\" />
+    <Folder Include="app\static\app\favicons\" />
     <Folder Include="app\static\app\fonts\" />
     <Folder Include="app\static\app\img\" />
     <Folder Include="app\static\app\scripts\" />
@@ -4621,6 +4622,11 @@
     <Folder Include="projects\templates\projects\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="app\static\app\favicons\site.webmanifest" />
+    <Content Include="app\static\app\img\bkslogo.png" />
+    <Content Include="app\static\app\img\bkslogosvtranspbg.PNG" />
+    <Content Include="app\static\app\img\bkslogovittranspbg.PNG" />
+    <Content Include="app\static\app\img\karla4.jpg" />
     <Content Include="app\templates\app\administrator.html" />
     <Content Include="app\templates\app\company_list.html" />
     <Content Include="app\templates\app\projects.html" />
@@ -9758,6 +9764,7 @@
     <Content Include="app\templates\app\layout.html" />
     <Content Include="app\templates\app\login.html" />
     <Content Include="app\templates\app\loginpartial.html" />
+    <Content Include="site.webmanifest" />
   </ItemGroup>
   <ItemGroup>
     <None Include="readme.html">

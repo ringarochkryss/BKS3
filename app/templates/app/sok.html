@@ -48,7 +48,7 @@
                                                 </h2>
                                             </div>
 
-                                            <!-- Accordion-innehåll -->
+                                            <!-- Accordion-innehall -->
                                             <div id="collapse-{{ lan.id }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ lan.id }}">
                                                 <div class="accordion-body">
                                                     {% for stad in lan.stader.all|dictsort:"namn" %}
@@ -74,13 +74,13 @@
 
             </div>
 
-            <!-- Verksamhetsområde -->
+            <!-- Verksamhetsomrade -->
             <div class="col-md-4">
                 <div class="accordion" id="accordionExampleOmrade">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingOmrade">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOmrade" aria-expanded="true" aria-controls="collapseOmrade">
-                                VÄLJ VERKSAMHETSOMRÅDE
+                                VÄLJ VERKSAMHET
                             </button>
                         </h2>
                         <div id="collapseOmrade" class="accordion-collapse collapse" aria-labelledby="headingOmrade" data-bs-parent="#accordionExampleOmrade">
@@ -154,7 +154,7 @@
                 <tr>
                     <th><input type="checkbox" id="select-all-checkbox"></th>
                     <th>Foretagsnamn</th>
-                    <th>Verksamhetsområde</th>
+                    <th>Verksamhet</th>
                     <th>Storlek</th>
                     <th>Projekt</th> <!-- Ny kolumn for projekt -->
                 </tr>
@@ -246,7 +246,7 @@
             });
         });
 
-        // När verksamhetsområde-knappen klickas
+        // När verksamhetsomrade-knappen klickas
         omradeCheckboxes.forEach(omrade => {
             omrade.addEventListener('change', function () {
                 omrade.nextElementSibling.classList.toggle('active', omrade.checked);
@@ -294,7 +294,7 @@
                             alertContainer.classList.add('alert', 'alert-success', 'alert-dismissible', 'fade', 'show');
                             alertContainer.setAttribute('role', 'alert');
                             alertContainer.innerHTML = `
-                                Foretagen har lagts till i projektet, klicka på ok for att uppdatera vyn!
+                                Foretagen har lagts till i projektet, klicka ok for att uppdatera vyn!
                                 <button type="button" class="btn btn-primary" id="alert-ok-button">OK</button>
                             `;
                             document.body.prepend(alertContainer);
@@ -353,12 +353,12 @@
                     `;
                     document.body.prepend(alertContainer);
 
-                    // Ta bort alerten efter några sekunder
+                    // Ta bort alerten efter nagra sekunder
                     setTimeout(() => {
                         alertContainer.remove();
                     }, 3000);
 
-                    // Rensa formuläret
+                    // Rensa formularet
                     addProjectForm.reset();
                 } else {
                     alert('Ett fel uppstod. Forsok igen.');
