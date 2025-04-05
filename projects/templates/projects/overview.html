@@ -10,7 +10,7 @@
 	</p>
 
 	<div class="col-8">
-		<form method="post" action="{% url 'update_status' project.id %}">
+		<form method="post" action="{% url 'update_status' project.id %}" id="statusForm">
 			{% csrf_token %}
 			<table class="table table-bordered">
 				<thead>
@@ -20,48 +20,51 @@
 						<th>Kontaktperson</th>
 						<th>Telefon</th>
 						<th>Email</th>
-						<th>Status</th>
+						<th>Aktuell Status</th>
+						<th>Status Edit</th>
 					</tr>
 				</thead>
 				<tbody>
-					{% for company in companies %}
+					{% for project_company in project_companies %}
 					<tr>
-						<td>{% for omrade in company.omraden.all %}{{ omrade.namn }} <i class="{{ omrade.ikon }}"></i>{% if not forloop.last %}, {% endif %}{% endfor %}</td>
-						<td class="red">Name: {{ company.namn }}</td>
-						<td>{{ company.kontaktperson }}</td>
-						<td>{{ company.telefonnummer }}</td>
-						<td>{{ company.epost }}</td>
+						<td>{% for omrade in project_company.company.omraden.all %}<span class="circleSm lightblue"><i class="{{ omrade.ikon }}"></i></span> {{ omrade.namn }} {% if not forloop.last %}, {% endif %}{% endfor %}</td>
+						<td class="red">Name: {{ project_company.company.namn }}</td>
+						<td>{{ project_company.company.kontaktperson }}</td>
+						<td>{{ project_company.company.telefonnummer }}</td>
+						<td>{{ project_company.company.epost }}</td>
 						<td>
-							<select name="status_{{ company.id }}" class="form-select">
+							{{ project_company.status.name }}
+						</td>
+						<td>
+							<select name="status_{{ project_company.company.id }}" class="form-select" onchange="document.getElementById('statusForm').submit();">
 								<option value="">Select Status</option>
-								{% for status in statuses %}
-								<option value="{{ status.id }}" {% if company.status.id= =status.id %}selected{% endif %}>{{ status.name }}</option>
+								{% for status in statuses %} 
+								<option value="{{ status.id }}" {% if project_company.status and project_company.status.id == status.id %}selected{% endif %}>{{ status.name }}</option>
 								{% endfor %}
 							</select>
 						</td>
 					</tr>
 					{% empty %}
 					<tr>
-						<td colspan="6">Inga foretag kopplade till detta projekt.</td>
+						<td colspan="7">Inga foretag kopplade till detta projekt.</td>
 					</tr>
 					{% endfor %}
 				</tbody>
 			</table>
-			<button type="submit" class="btn btn-primary">Save Status</button>
 		</form>
-
-		<div class="col-4">
-			<div class="bg-white mp-0">
-				<h4>Epostlista</h4>
-				<ul>
-					{% for company in companies %}
-					<li>{{ company.epost }}</li>
-					{% endfor %}
-				</ul>
-			</div>
-		</div>
-
 	</div>
+
+	<div class="col-4">
+		<div class="bg-white mp-0">
+			<h4>Epostlista</h4>
+			<ul>
+				{% for project_company in project_companies %}
+				<li>{{ project_company.company.epost }}</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+
 </div>
 
 {% endblock %}

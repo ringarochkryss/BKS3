@@ -89,6 +89,37 @@ def delete_project(request):
     return JsonResponse({'status': 'success'})
 
 @login_required
+def project_overview(request, project_id):
+    assert isinstance(request, HttpRequest)
+    project = get_object_or_404(Project, id=project_id, created_by=request.user)
+    companies = project.companies.all()
+    statuses = Status.objects.all()  # Hämta alla statusar
+    project_companies = ProjectCompany.objects.filter(project=project).select_related('company', 'status')
+    
+@login_required
+def project_overview(request, project_id):
+    assert isinstance(request, HttpRequest)
+    project = get_object_or_404(Project, id=project_id, created_by=request.user)
+    companies = project.companies.all()
+    statuses = Status.objects.all()  # Hämta alla statusar
+    project_companies = ProjectCompany.objects.filter(project=project).select_related('company', 'status')
+    
+    return render(
+        request,
+        'projects/overview.html',
+        {
+            'title': 'Projektoversikt',
+            'message': 'valt projekt.',
+            'year': datetime.now().year,
+            'project': project,
+            'companies': companies,
+            'statuses': statuses,  # Lägg till statusar i contexten
+            'project_companies': project_companies,  # Lägg till project_companies i contexten
+        }
+    )
+
+
+@login_required
 @require_POST
 def update_status(request, project_id):
     project = get_object_or_404(Project, id=project_id, created_by=request.user)
@@ -102,6 +133,7 @@ def update_status(request, project_id):
                 defaults={'status': status}
             )
     return redirect('project_overview', project_id=project_id)
+
 
 
 

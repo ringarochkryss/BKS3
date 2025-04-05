@@ -29,6 +29,7 @@ class ProjectCompany(models.Model):
         return f"{self.project.name} - {self.company.namn}: {self.status}"
 
 
+
 class MyCompanyContact(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='contacts')
     user = models.ForeignKey(User, on_delete=models.CASCADE)

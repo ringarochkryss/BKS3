@@ -9,7 +9,6 @@ from django.contrib.auth.views import LoginView, LogoutView
 from app import forms, views
 from projects import views as project_views 
 
-
 urlpatterns = [
     path('', views.home, name='home'),
     path('contact/', views.contact, name='contact'),
@@ -47,5 +46,4 @@ urlpatterns = [
          ),
          name='login'),
     path('logout/', LogoutView.as_view(next_page='/'), name='logout'),
-    
 ]

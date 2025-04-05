@@ -48,6 +48,20 @@ p, small, text {
     color:#fff;
 }
 
+.lightblue {
+    color: lightslategray;
+}
+
+.circleSm {
+    border: 1px solid lightslategray;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    display: inline-block;
+    text-align: center;
+    line-height: 20px;
+}
+
 .circleMd {
     border: 1px solid #fff;
     height: 50px;
