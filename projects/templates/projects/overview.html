@@ -3,88 +3,95 @@
 {% block content %}
 
 <div class="row container-fluid">
-
-	<h3>{{ project.name }}</h3>
-	<p>
-		{{ project.start_date }} - {{ project.end_date }}
-	</p>
-
 	<div class="col-8 col-xl-9">
-		<form method="post" action="{% url 'update_status' project.id %}" id="statusForm">
-			{% csrf_token %}
-			<table class="table table-bordered">
-				<thead>
-					<tr>
-						<th>Konto</th>
-						<th>Foretagstyp</th>
-						<th>Foretagsnamn</th>
-						<th>Kontaktperson</th>
-						<th>Telefon</th>
-						<th>Email</th>
-						<th>Status Edit</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for item in company_status_list %}
-					<tr>
-						<td>
-							{% for omrade in item.company.omraden.all %}
-							{{ omrade.sorteringsordning }}{% if not forloop.last %}, {% endif %}
-							{% endfor %}
-						</td>
-						<td>{% for omrade in item.company.omraden.all %}<span class="circleSm m-1 lightblue"><i class="{{ omrade.ikon }} {{ omrade.farg_css_klass }}"></i></span> {{ omrade.namn }} {% if not forloop.last %}, {% endif %}{% endfor %}</td>
-						<td class="red">Name: {{ item.company.namn }}</td>
-						<td>{{ item.company.kontaktperson }}</td>
-						<td>{{ item.company.telefonnummer }}</td>
-						<td>{{ item.company.epost }}</td>
-						<td>
-							<select name="status_{{ item.company.id }}" class="form-select" onchange="document.getElementById('statusForm').submit();">
-								<option value="">Select Status</option>
-								{% for status in statuses %}
-								<option value="{{ status.id }}" {% if item.status and item.status.id == status.id %}selected{% endif %}>{{ status.name }}</option>
-								{% endfor %}
-							</select>
-						</td>
-					</tr>
-					{% empty %}
-					<tr>
-						<td colspan="7">Inga foretag kopplade till detta projekt.</td>
-					</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</form>
-	</div>
+		<h3>{{ project.name }}</h3>
+		<p>
+			{% if project.start_date and project.end_date %}{{ project.start_date }} - {{ project.end_date }}{% endif %}
 
-	<div class="col-4 col-xl-3">
-		<div class="bg-white rounded">
-			<h4>Epostlista</h4>
-			<ul id="emailList" style="list-style-type: none;">
-				{% for item in company_status_list %}
-				<li>{{ item.company.epost }}</li>
-				{% endfor %}
-			</ul>
-			<button class="btn pillLG btn-outline-dark btn-large py-2 px-4" onclick="copyEmails()"><i class="fas fa-copy"></i>&nbsp;Kopiera epostadresser</button>
+		</p>
+	</div>
+		<div class="col-4 col-xl-3 text-end">
+			<div class="col-6 mb-2"><button class="btn btn-block pillLG btn-dark btn-large py-2 px-4" onclick="copyEmails()"><i class="fas fa-copy"></i>&nbsp;Kopiera epostadresser</button></div>
 		</div>
+
+		<div class="col-8 col-xl-9">
+			<form method="post" action="{% url 'update_status' project.id %}" id="statusForm">
+				{% csrf_token %}
+				<table class="table table-bordered table-striped">
+					<thead>
+						<tr>
+							<th>Konto</th>
+							<th>Foretagstyp</th>
+							<th>Foretagsnamn</th>
+							<th>Kontaktperson</th>
+							<th>Telefon</th>
+							<th>Email</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for item in company_status_list %}
+						<tr>
+							<td>
+								{% for omrade in item.company.omraden.all %}
+								{{ omrade.sorteringsordning }}{% if not forloop.last %}, {% endif %}
+								{% endfor %}
+							</td>
+							<td>{% for omrade in item.company.omraden.all %}<span class="circleSm m-1 lightblue"><i class="{{ omrade.ikon }} {{ omrade.farg_css_klass }}"></i></span> {{ omrade.namn }} {% if not forloop.last %}, {% endif %}{% endfor %}</td>
+							<td class="red">Name: {{ item.company.namn }}</td>
+							<td>{{ item.company.kontaktperson }}</td>
+							<td>{{ item.company.telefonnummer }}</td>
+							<td>{{ item.company.epost }}</td>
+							<td>
+								<select name="status_{{ item.company.id }}" class="form-select" onchange="document.getElementById('statusForm').submit();">
+									<option value="">Select Status</option>
+									{% for status in statuses %}
+									<option value="{{ status.id }}" {% if item.status and item.status.id == status.id %}selected{% endif %}>{{ status.name }}</option>
+									{% endfor %}
+								</select>
+							</td>
+						</tr>
+						{% empty %}
+						<tr>
+							<td colspan="7">Inga foretag kopplade till detta projekt.</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</form>
+		</div>
+
+		<div class="col-4 col-xl-3">
+			<div class="bg-white rounded p-3">
+					<div class="col-6"><h4>Epostlista</h4></div>
+
+
+				<ul id="emailList" style="list-style-type: none;">
+					{% for item in company_status_list %}
+					<li>{{ item.company.epost }}</li>
+					{% endfor %}
+				</ul>
+
+			</div>
+		</div>
+
 	</div>
 
-</div>
-
-<script>
-	function copyEmails() {
-		var emailList = document.getElementById('emailList');
-		var emails = [];
-		for (var i = 0; i < emailList.children.length; i++) {
-			emails.push(emailList.children[i].innerText);
+	<script>
+		function copyEmails() {
+			var emailList = document.getElementById('emailList');
+			var emails = [];
+			for (var i = 0; i < emailList.children.length; i++) {
+				emails.push(emailList.children[i].innerText);
+			}
+			var emailString = emails.join(', ');
+			navigator.clipboard.writeText(emailString).then(function () {
+				alert('Epostadresser kopierade till urklipp!');
+			}, function (err) {
+				console.error('Kunde inte kopiera epostadresser: ', err);
+			});
 		}
-		var emailString = emails.join(', ');
-		navigator.clipboard.writeText(emailString).then(function () {
-			alert('Epostadresser kopierade till urklipp!');
-		}, function (err) {
-			console.error('Kunde inte kopiera epostadresser: ', err);
-		});
-	}
-</script>
+	</script>
 
-{% endblock %}
+	{% endblock %}
 
