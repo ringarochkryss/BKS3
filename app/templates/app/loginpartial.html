@@ -3,14 +3,14 @@
     {% csrf_token %}
     <ul class="nav navbar-nav navbar-right">
         <li><span class="navbar-brand">Hej {{ user.username }}!</span></li>
-        <li><a href="javascript:document.getElementById('logoutForm').submit()" class="btn btn-outline-dark pill p-2"><i class="fas fa-user-circle mr-2"></i>Log off</a></li>
+        <li><a href="javascript:document.getElementById('logoutForm').submit()" class="btn btn-outline-dark pill py-2 px-4"><i class="fas fa-user-circle mr-2"></i>&nbsp;Log off</a></li>
     </ul>
 </form>
 
 {% else %}
 
 <ul class="nav navbar-nav navbar-right">
-    <li class="p-2"><a href="{% url 'login' %}" class="btn btn-outline-dark pill py-2 px-4"><i class="fas fa-user-circle pr-2"></i> Log in </a></li>
+    <li class="p-2"><a href="{% url 'login' %}" class="btn btn-outline-dark pill py-2 px-4"><i class="fas fa-user-circle py-2 px-4"></i>&nbsp; Log in </a></li>
 </ul>
 
 {% endif %}

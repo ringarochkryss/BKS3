@@ -88,13 +88,6 @@ def delete_project(request):
 
     return JsonResponse({'status': 'success'})
 
-@login_required
-def project_overview(request, project_id):
-    assert isinstance(request, HttpRequest)
-    project = get_object_or_404(Project, id=project_id, created_by=request.user)
-    companies = project.companies.all()
-    statuses = Status.objects.all()  # Hämta alla statusar
-    project_companies = ProjectCompany.objects.filter(project=project).select_related('company', 'status')
     
 @login_required
 def project_overview(request, project_id):
@@ -102,7 +95,15 @@ def project_overview(request, project_id):
     project = get_object_or_404(Project, id=project_id, created_by=request.user)
     companies = project.companies.all()
     statuses = Status.objects.all()  # Hämta alla statusar
-    project_companies = ProjectCompany.objects.filter(project=project).select_related('company', 'status')
+    
+    # Skapa en lista med företag och deras status
+    company_status_list = []
+    for company in companies:
+        project_company = ProjectCompany.objects.filter(project=project, company=company).first()
+        company_status_list.append({
+            'company': company,
+            'status': project_company.status if project_company else None
+        })
     
     return render(
         request,
@@ -114,9 +115,12 @@ def project_overview(request, project_id):
             'project': project,
             'companies': companies,
             'statuses': statuses,  # Lägg till statusar i contexten
-            'project_companies': project_companies,  # Lägg till project_companies i contexten
+            'company_status_list': company_status_list,  # Lägg till company_status_list i contexten
         }
     )
+
+
+
 
 
 @login_required
