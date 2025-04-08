@@ -1,1 +1,1 @@
-web: gunicorn BKS2.wsgi
+web: gunicorn BKS2.BKS.wsgi:application
