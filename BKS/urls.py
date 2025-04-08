@@ -46,4 +46,10 @@ urlpatterns = [
          ),
          name='login'),
     path('logout/', LogoutView.as_view(next_page='/'), name='logout'),
+
+    #Company List
+    path('companies/', views.company_list, name='company_list'),
+    path('companies/add/', views.add_company, name='add_company'),
+    path('companies/edit/', views.edit_company, name='edit_company'),
+    path('companies/delete/', views.delete_company, name='delete_company'),
 ]

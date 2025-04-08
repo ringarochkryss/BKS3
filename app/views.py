@@ -11,6 +11,7 @@ from django.http import HttpRequest
 from companies.models import Company, VerksamhetsOmraden, ForetagsStorlek
 from locations.models import Stad, Lan, Land
 from projects.models import Project
+from django.views.decorators.csrf import csrf_exempt
 import json
 
 def home(request):
@@ -170,5 +171,56 @@ def sok_foretags(request):
 
     return render(request, 'app/sok.html', context)
 
+def company_list(request):
+    companies = Company.objects.prefetch_related('omraden', 'verksamma_stader').all()
+    omraden = VerksamhetsOmraden.objects.all()  # Fetch all available areas
+    counties = Lan.objects.prefetch_related('stader').all()  # Fetch counties with their cities
 
+    for company in companies:
+        company.omraden_ids = list(company.omraden.values_list('id', flat=True))  # Preprocess area IDs
+        company.city_ids = list(company.verksamma_stader.values_list('id', flat=True))  # Preprocess city IDs
+
+    return render(request, 'app/company_list.html', {
+        'companies': companies,
+        'omraden': omraden,
+        'counties': counties,  # Pass counties and their cities
+    })
+
+
+
+@csrf_exempt
+def add_company(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        company = Company.objects.create(
+            omraden=data.get('omraden'),
+            namn=data.get('namn'),
+            epost=data.get('epost'),
+            telefonnummer=data.get('telefonnummer'),
+            verksamma_stader=data.get('verksamma_stader'),
+        )
+        return JsonResponse({'id': company.id}, status=201)
+
+@csrf_exempt
+def edit_company(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        company = get_object_or_404(Company, id=data.get('id'))
+        company.omraden.set(data.get('omraden', []))  # Use .set() for many-to-many field
+        company.namn = data.get('namn')
+        company.epost = data.get('epost')
+        company.telefonnummer = data.get('telefonnummer')
+        company.verksamma_stader.set(data.get('verksamma_stader', []))  # Also fix for cities
+        company.konkurs = data.get('konkurs', False)
+        company.save()
+        return JsonResponse({'status': 'success'}, status=200)
+
+
+@csrf_exempt
+def delete_company(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        company = get_object_or_404(Company, id=data.get('id'))
+        company.delete()
+        return JsonResponse({'status': 'success'}, status=200)
 
