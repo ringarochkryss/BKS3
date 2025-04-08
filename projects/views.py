@@ -94,9 +94,9 @@ def project_overview(request, project_id):
     assert isinstance(request, HttpRequest)
     project = get_object_or_404(Project, id=project_id, created_by=request.user)
     companies = project.companies.all()
-    statuses = Status.objects.all()  # Hämta alla statusar
+    statuses = Status.objects.all()  
     
-    # Skapa en lista med företag och deras status
+    # Skapa en lista med foretag och deras status
     company_status_list = []
     for company in companies:
         project_company = ProjectCompany.objects.filter(project=project, company=company).first()
@@ -114,8 +114,8 @@ def project_overview(request, project_id):
             'year': datetime.now().year,
             'project': project,
             'companies': companies,
-            'statuses': statuses,  # Lägg till statusar i contexten
-            'company_status_list': company_status_list,  # Lägg till company_status_list i contexten
+            'statuses': statuses,  
+            'company_status_list': company_status_list,  
         }
     )
 

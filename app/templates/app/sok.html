@@ -8,18 +8,18 @@
         <div class="bg-light p-3 rounded mt-3">
             <form method="get">
                 <!--Searchbutton-->
-                <div class="text-center center mb-2">
+                <div class="text-center mb-2">
                     <button type="submit" class="btn pillLG btn-dark btn-large py-2 px-4"><i class="fas fa-search"></i>&nbsp;Sök</button>
                 </div>
 
                 <!-- Land -->
                 <!--<div class="col-6 col-md-4 col-lg-2">
-            <label for="land">Land</label>
-            <select name="land" class="form-select form-select-lg mb-3" aria-label="Search Country">
-                {% for land in lander %}
-                <option value="{{ land.id }}" {% if land.id|stringformat:"s" in request.GET.land %}selected{% endif %}>{{ land.namn }}</option>                    {% endfor %}
-            </select>
-        </div>-->
+                    <label for="land">Land</label>
+                    <select name="land" class="form-select form-select-lg mb-3" aria-label="Search Country">
+                        {% for land in lander %}
+                        <option value="{{ land.id }}" {% if land.id|stringformat:"s" in request.GET.land %}selected{% endif %}>{{ land.namn }}</option>                    {% endfor %}
+                    </select>
+                </div>-->
                 <!-- Lan och Stad -->
                 <div class="accordion" id="accordionExample">
                     <div class="accordion-item">
@@ -77,14 +77,16 @@
                                 VÄLJ VERKSAMHET
                             </button>
                         </h2>
+
                         <div id="collapseOmrade" class="accordion-collapse collapse" aria-labelledby="headingOmrade" data-bs-parent="#accordionExampleOmrade">
                             <div class="accordion-body">
-                                <div class="form-check">
+                  
+                                <div class="form-check" id="omradeList">
                                     {% for omrade in omraden|dictsort:"namn" %}
                                     <div class="d-flex align-items-center accordion-item py-2">
                                         <input type="checkbox" class="btn-check omrade-checkbox" id="omrade-{{ omrade.id }}" name="omrade" value="{{ omrade.id }}">
                                         <label class="btn btn btn-outline-primary me-2" for="omrade-{{ omrade.id }}">Välj</label>
-                                        <span>{{ omrade.namn }}</span>
+                                        <span>{{ omrade.sorteringsordning }} - {{ omrade.namn }}</span>
                                     </div>
                                     {% endfor %}
                                 </div>
@@ -94,7 +96,7 @@
                 </div>
 
                 <!--storlek-->
-                <div class="accordion" id="accordionExampleStorlek">
+                <!--<div class="accordion" id="accordionExampleStorlek">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingStorlek">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStorlek" aria-expanded="true" aria-controls="collapseStorlek">
@@ -116,7 +118,7 @@
                         </div>
 
                     </div>
-                </div>
+                </div>-->
 
 
 
@@ -355,7 +357,7 @@
                     alertContainer.innerHTML = `
                        Ditt nya projekt är sparat!
                         <button type="button" class="btn pillLG btn-outline-dark btn-large py-2 px-4" id="alert-ok-buttonNew">OK</button>
-                       
+
                     `;
                     document.body.prepend(alertContainer);
 
@@ -372,6 +374,8 @@
             });
         });
     });
+
+	
 </script>
 
 
@@ -384,3 +388,5 @@
 
 
 {% endblock %}
+
+

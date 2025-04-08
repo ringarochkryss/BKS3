@@ -1,3 +1,18 @@
+html, body {
+    height: 100%;
+}
+
+.body-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 75px;
+}
+
+    .body-content > footer {
+        margin-top: auto;
+    }
+
 body {
     background-image: url('../img/karla4.jpg');
     background-repeat: no-repeat;
@@ -6,11 +21,6 @@ body {
     background-color: #f8f9fa;
 }
 
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
-    padding-top: 80px;
-}
 
 h1 {
     font-family: "Gelasio", serif;
@@ -32,6 +42,33 @@ p, small, text {
     font-family: "Open Sans", sans-serif;
 }
 
+form-signin {
+    max-width: 330px;
+    padding: 1rem;
+}
+
+.m-auto {
+    margin: auto !important;
+}
+
+.w-100 {
+    width: 100% !important;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 1rem;
+}
+.align-items-center {
+    align-items: center !important;
+}
+
+.center {
+    align-items: center;
+    justify-content:center;
+    min-height: 100vh;
+}
+
 .glass {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 16px;
@@ -39,6 +76,15 @@ p, small, text {
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.blueglass {
+    background: rgba( 34, 87, 183, 0.45 );
+    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    border: 1px solid rgba( 255, 255, 255, 0.18 );
 }
 
 .frontIcon {

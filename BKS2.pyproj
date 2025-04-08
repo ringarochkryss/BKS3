@@ -1703,6 +1703,9 @@
     <Compile Include="BKS\settings.py" />
     <Compile Include="BKS\urls.py" />
     <Compile Include="BKS\wsgi.py" />
+    <Compile Include="procfile.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="projects\admin.py" />
     <Compile Include="projects\apps.py" />
     <Compile Include="projects\context_processors.py">
@@ -4622,6 +4625,9 @@
     <Folder Include="projects\templates\projects\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".env">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="app\static\app\favicons\site.webmanifest" />
     <Content Include="app\static\app\img\bkslogo.png" />
     <Content Include="app\static\app\img\bkslogosvtranspbg.PNG" />

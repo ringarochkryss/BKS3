@@ -1,25 +1,22 @@
 {% extends "app/layout.html" %}
 
 {% block content %}
-<h2>{{ title }}</h2>
-<h3>{{ message }}</h3>
+
 
 <div class="container">
 	<h2>Projektlista</h2>
+		<button class="btn pillLG btn-dark btn-large py-2 px-4 mb-2 mx-3" data-bs-toggle="modal" data-bs-target="#addProjectModal">Lägg till Projekt</button>
+		<button class="btn pillLG btn-dark btn-outline-large py-2 px-4 mb-2 mx-3 float-end">{% if show_archived %}Dolj Arkiverade{% else %}Visa Arkiverade{% endif %}</button>
 
-	<button class="btn btn-secondary mb-3" id="toggleArchived">{% if show_archived %}Dolj Arkiverade{% else %}Visa Arkiverade{% endif %}</button>
-	<button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addProjectModal">Lägg till Projekt</button>
 
-	<table class="table table-bordered">
+	<table class="table table-bordered table-striped">
 		<thead>
 			<tr>
 				<th>Namn</th>
 				<th>Startdatum</th>
 				<th>Slutdatum</th>
-				<th>Foretag</th>
-				<th>Skapad av</th>
 				<th>Arkiverad</th>
-				<th>Åtgärder</th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -28,16 +25,10 @@
 				<td>{{ project.name }}</td>
 				<td>{{ project.start_date }}</td>
 				<td>{{ project.end_date }}</td>
-				<td>
-					{% for company in project.companies.all %}
-					{{ company.name }}{% if not forloop.last %}, {% endif %}
-					{% endfor %}
-				</td>
-				<td>{{ project.created_by.username }}</td>
 				<td><input type="checkbox" {% if project.archived %}checked{% endif %} disabled></td>
 				<td>
-					<button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal" data-id="{{ project.id }}" data-name="{{ project.name }}" data-start_date="{{ project.start_date }}" data-end_date="{{ project.end_date }}" data-archived="{{ project.archived }}">Redigera</button>
-					<button class="btn btn-danger btn-sm" onclick="confirmDelete({{ project.id }})">Ta bort</button>
+					<button class="btn btn-small pill btn-outline-dark btn-large px-2" data-bs-toggle="modal" data-bs-target="#editModal" data-id="{{ project.id }}" data-name="{{ project.name }}" data-start_date="{{ project.start_date }}" data-end_date="{{ project.end_date }}" data-archived="{{ project.archived }}">Redigera</button>
+					<button class="btn btn-small pill btn-dark btn-large px-3" onclick="confirmDelete({{ project.id }})">Ta bort</button>
 				</td>
 			</tr>
 			{% endfor %}
@@ -68,7 +59,7 @@
 						<label for="addEndDate" class="form-label">Slutdatum</label>
 						<input type="date" class="form-control" id="addEndDate">
 					</div>
-					<button type="submit" class="btn btn-primary">Lägg till</button>
+					<button type="submit" class="btn pillLG btn-dark btn-large py-2 px-4"><i class="fas fa-save"></i>&nbsp;Spara projekt</button>
 				</form>
 			</div>
 		</div>
@@ -102,7 +93,7 @@
 						<input type="checkbox" class="form-check-input" id="editArchived">
 						<label class="form-check-label" for="editArchived">Arkiverad</label>
 					</div>
-					<button type="submit" class="btn btn-primary">Spara ändringar</button>
+					<button type="submit" class="btn pillLG btn-dark btn-large py-2 px-4"><i class="fas fa-save"></i>&nbsp; Spara</button>
 				</form>
 			</div>
 		</div>
@@ -121,8 +112,8 @@
 				Är du säker på att du vill ta bort detta projekt?
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
-				<button type="button" class="btn btn-danger" id="confirmDeleteButton">Ta bort</button>
+				<button type="button" class="btn pillLG btn-dark btn-large py-2 px-4"><i class="fas fa-dog"></i>&nbsp;Avbryt</button>
+				<button type="button" class="btn pillLG btn-dark btn-large py-2 px-4"><i class="fas fa-trash-alt"></i>&nbsp;Ta bort</button>
 			</div>
 		</div>
 	</div>
