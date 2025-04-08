@@ -1703,7 +1703,7 @@
     <Compile Include="BKS\settings.py" />
     <Compile Include="BKS\urls.py" />
     <Compile Include="BKS\wsgi.py" />
-    <Compile Include="procfile">
+    <Compile Include="Procfile">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="projects\admin.py" />
