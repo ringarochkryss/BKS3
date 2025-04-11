@@ -1,4 +1,4 @@
-{% extends "app/layout.html" %}
+﻿{% extends "app/layout.html" %}
 
 {% block content %}
 
@@ -7,6 +7,13 @@
     <button class="btn pillLG btn-dark btn-large py-2 px-4 mb-2 mx-3" data-bs-toggle="modal" data-bs-target="#addCompanyModal">
         <i class="fas fa-plus"></i> Add New
     </button>
+
+    <div class="mb-3 mt-2">
+        <button class="btn btn-dark btn-large py-2 px-4" data-bs-toggle="modal" data-bs-target="#uploadExcelModal">
+            Upload Excel
+        </button>
+    </div>
+
 
     <table class="table table-bordered table-striped">
         <thead>
@@ -44,11 +51,11 @@
                 <td>
                     <button class="btn btn-small pill btn-outline-dark btn-large px-2" data-bs-toggle="modal" data-bs-target="#editModal"
                             data-id="{{ company.id }}"
-                            data-omraden="{{ company.omraden }}"
+                            data-omraden="{{ company.omraden_ids|join:',' }}"
                             data-namn="{{ company.namn }}"
                             data-epost="{{ company.epost }}"
                             data-telefonnummer="{{ company.telefonnummer }}"
-                            data-verksamma_stader="{{ company.verksamma_stader }}"
+                            data-verksamma_stader="{{ company.city_ids|join:',' }}"
                             data-konkurs="{{ company.konkurs }}">
                         Edit
                     </button>
@@ -77,11 +84,6 @@
                             <option value="{{ area.id }}">{{ area.sorteringsordning }} - {{ area.namn }}</option>
                             {% endfor %}
                         </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="addIkon" class="form-label">Icon</label>
-                        <input type="text" class="form-control" id="addIkon" placeholder="Example: fas fa-home">
                     </div>
                     <div class="mb-3">
                         <label for="addNamn" class="form-label">Name</label>
@@ -130,18 +132,11 @@
                     <input type="hidden" id="editCompanyId">
                     <div class="mb-3">
                         <label for="editOmraden" class="form-label">Areas</label>
-                        <select class="form-select" id="editOmraden" required>
+                        <select class="form-select" id="editOmraden" multiple required>
                             {% for area in omraden %}
-                            <option value="{{ area.id }}" {% if area.id in company.omraden_ids %}selected{% endif %}>
-                                {{ area.sorteringsordning }} - {{ area.namn }}
-                            </option>
+                            <option value="{{ area.id }}">{{ area.sorteringsordning }} - {{ area.namn }}</option>
                             {% endfor %}
                         </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="editIkon" class="form-label">Icon</label>
-                        <input type="text" class="form-control" id="editIkon">
                     </div>
                     <div class="mb-3">
                         <label for="editNamn" class="form-label">Name</label>
@@ -161,9 +156,7 @@
                             {% for county in counties %}
                             <optgroup label="{{ county.namn }}">
                                 {% for city in county.stader.all %}
-                                <option value="{{ city.id }}" {% if city.id in company.city_ids %}selected{% endif %}>
-                                    {{ city.namn }}
-                                </option>
+                                <option value="{{ city.id }}">{{ city.namn }}</option>
                                 {% endfor %}
                             </optgroup>
                             {% endfor %}
@@ -202,6 +195,28 @@
     </div>
 </div>
 
+<!-- Upload Excel Modal -->
+<div class="modal fade" id="uploadExcelModal" tabindex="-1" aria-labelledby="uploadExcelModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadExcelModalLabel">Upload Excel File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadExcelForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="excelFile" class="form-label">Choose Excel File</label>
+                        <input type="file" class="form-control" id="excelFile" name="excelFile" accept=".xlsx, .xls" required>
+                    </div>
+                    <button type="submit" class="btn btn-dark btn-large py-2 px-4">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
     function getCookie(name) {
         let cookieValue = null;
@@ -219,99 +234,105 @@
     }
     const csrftoken = getCookie('csrftoken');
 
-	// Handle "Add Company" form submission
-	document.getElementById('addCompanyForm').addEventListener('submit', function (event) {
-		event.preventDefault();
-		var cities = Array.from(document.getElementById('addCities').selectedOptions).map(option => option.value);
-		var omraden = document.getElementById('addOmraden').value;
-		var ikon = document.getElementById('addIkon').value;
-		var namn = document.getElementById('addNamn').value;
-		var epost = document.getElementById('addEpost').value;
-		var telefonnummer = document.getElementById('addTelefonnummer').value;
+    // Handle "Add Company" form submission
+    document.getElementById('addCompanyForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        var cities = Array.from(document.getElementById('addCities').selectedOptions).map(option => option.value);
+        var omraden = document.getElementById('addOmraden').value;
+        var ikon = document.getElementById('addIkon').value;
+        var namn = document.getElementById('addNamn').value;
+        var epost = document.getElementById('addEpost').value;
+        var telefonnummer = document.getElementById('addTelefonnummer').value;
 
-		fetch('{% url "add_company" %}', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-CSRFToken': csrftoken
-			},
-			body: JSON.stringify({
-				omraden: omraden,
-				ikon: ikon,
-				namn: namn,
-				epost: epost,
-				telefonnummer: telefonnummer,
-				cities: cities
-			})
-		}).then(response => {
-			if (response.ok) {
-				location.reload();
-			}
-		});
-	});
+        fetch('{% url "add_company" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({
+                omraden: omraden,
+                ikon: ikon,
+                namn: namn,
+                epost: epost,
+                telefonnummer: telefonnummer,
+                cities: cities
+            })
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    });
 
-	// Handle "Edit Company" modal population
-	var editModal = document.getElementById('editModal');
-	editModal.addEventListener('show.bs.modal', function (event) {
-		var button = event.relatedTarget;
-		var id = button.getAttribute('data-id');
-		var cityIds = button.getAttribute('data-verksamma_stader').split(','); // Ensure this is a comma-separated list of IDs
-		var omraden = button.getAttribute('data-omraden');
-		var namn = button.getAttribute('data-namn');
-		var epost = button.getAttribute('data-epost');
-		var telefonnummer = button.getAttribute('data-telefonnummer');
-		var konkurs = button.getAttribute('data-konkurs') === 'true';
+    // Handle "Edit Company" modal population
+    var editModal = document.getElementById('editModal');
+    editModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var id = button.getAttribute('data-id');
+        var omraden = button.getAttribute('data-omraden').split(','); // Comma-separated list of area IDs
+        var namn = button.getAttribute('data-namn');
+        var epost = button.getAttribute('data-epost');
+        var telefonnummer = button.getAttribute('data-telefonnummer');
+        var cityIds = button.getAttribute('data-verksamma_stader').split(','); // Comma-separated list of city IDs
+        var konkurs = button.getAttribute('data-konkurs') === 'true';
 
-		var modal = this;
-		modal.querySelector('#editCompanyId').value = id;
-		modal.querySelector('#editOmraden').value = omraden;
-		modal.querySelector('#editNamn').value = namn;
-		modal.querySelector('#editEpost').value = epost;
-		modal.querySelector('#editTelefonnummer').value = telefonnummer;
-		modal.querySelector('#editKonkurs').checked = konkurs;
+        var modal = this;
+        modal.querySelector('#editCompanyId').value = id;
+        modal.querySelector('#editNamn').value = namn;
+        modal.querySelector('#editEpost').value = epost;
+        modal.querySelector('#editTelefonnummer').value = telefonnummer;
+        modal.querySelector('#editKonkurs').checked = konkurs;
 
-		// Populate the cities dropdown
-		var editCitiesSelect = modal.querySelector('#editCities');
-		for (var i = 0; i < editCitiesSelect.options.length; i++) {
-			var option = editCitiesSelect.options[i];
-			option.selected = cityIds.includes(option.value);
-		}
-	});
+        // Populate the areas dropdown
+        var editOmradenSelect = modal.querySelector('#editOmraden');
+        for (var i = 0; i < editOmradenSelect.options.length; i++) {
+            var option = editOmradenSelect.options[i];
+            option.selected = omraden.includes(option.value);
+        }
 
-	// Handle "Edit Company" form submission
-	document.getElementById('editForm').addEventListener('submit', function (event) {
-		event.preventDefault();
-		var id = document.getElementById('editCompanyId').value;
-		var cities = Array.from(document.getElementById('editCities').selectedOptions).map(option => option.value);
-		var omraden = document.getElementById('editOmraden').value;
-		var ikon = document.getElementById('editIkon').value;
-		var namn = document.getElementById('editNamn').value;
-		var epost = document.getElementById('editEpost').value;
-		var telefonnummer = document.getElementById('editTelefonnummer').value;
-		var konkurs = document.getElementById('editKonkurs').checked;
+        // Populate the cities dropdown
+        var editCitiesSelect = modal.querySelector('#editCities');
+        for (var i = 0; i < editCitiesSelect.options.length; i++) {
+            var option = editCitiesSelect.options[i];
+            option.selected = cityIds.includes(option.value);
+        }
+    });
 
-		fetch('{% url "edit_company" %}', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-CSRFToken': csrftoken
-			},
-			body: JSON.stringify({
-				id: id,
-				omraden: omraden,
-				ikon: ikon,
-				namn: namn,
-				epost: epost,
-				telefonnummer: telefonnummer,
-				cities: cities,
-				konkurs: konkurs
-			})
-		}).then(response => {
-			if (response.ok) {
-				location.reload();
-			}
-		});
-	});
+    // Handle "Edit Company" form submission
+    document.getElementById('editForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        var id = document.getElementById('editCompanyId').value;
+        var cities = Array.from(document.getElementById('editCities').selectedOptions).map(option => option.value);
+        var omraden = document.getElementById('editOmraden').value;
+        var ikon = document.getElementById('editIkon').value;
+        var namn = document.getElementById('editNamn').value;
+        var epost = document.getElementById('editEpost').value;
+        var telefonnummer = document.getElementById('editTelefonnummer').value;
+        var konkurs = document.getElementById('editKonkurs').checked;
+
+        fetch('{% url "edit_company" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({
+                id: id,
+                omraden: omraden,
+                ikon: ikon,
+                namn: namn,
+                epost: epost,
+                telefonnummer: telefonnummer,
+                cities: cities,
+                konkurs: konkurs
+            })
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    });
 
 
     // Hantera "Ta bort Foretag"-modalen
@@ -335,6 +356,37 @@
             });
         };
     }
+
+	document.getElementById('uploadExcelForm').addEventListener('submit', function (event) {
+		event.preventDefault();
+		var formData = new FormData();
+		var fileInput = document.getElementById('excelFile');
+		formData.append('excelFile', fileInput.files[0]);
+
+		fetch('{% url "upload_excel" %}', {
+			method: 'POST',
+			headers: {
+				'X-CSRFToken': csrftoken
+			},
+			body: formData
+		}).then(response => {
+			if (response.ok) {
+				response.json().then(data => {
+					alert('Success: ' + data.message || 'File uploaded and data processed successfully!');
+					location.reload(); // Reload the page to reflect new data
+				});
+			} else {
+				response.json().then(data => {
+					alert('Error: ' + data.message || 'Failed to upload and process file.');
+				});
+			}
+		}).catch(error => {
+			alert('Error: An unexpected error occurred.');
+			console.error(error);
+		});
+	});
+
+
 </script>
 
 {% endblock %}

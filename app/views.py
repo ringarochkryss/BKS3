@@ -1,4 +1,4 @@
-"""
+﻿"""
 Definition of views.
 """
 
@@ -193,13 +193,15 @@ def add_company(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         company = Company.objects.create(
-            omraden=data.get('omraden'),
             namn=data.get('namn'),
             epost=data.get('epost'),
             telefonnummer=data.get('telefonnummer'),
-            verksamma_stader=data.get('verksamma_stader'),
+            konkurs=data.get('konkurs', False)
         )
+        company.omraden.set(data.get('omraden', []))  # Use .set() for many-to-many field
+        company.verksamma_stader.set(data.get('verksamma_stader', []))  # Use .set() for many-to-many field
         return JsonResponse({'id': company.id}, status=201)
+
 
 @csrf_exempt
 def edit_company(request):
@@ -223,4 +225,72 @@ def delete_company(request):
         company = get_object_or_404(Company, id=data.get('id'))
         company.delete()
         return JsonResponse({'status': 'success'}, status=200)
+
+import pandas as pd
+from django.core.files.storage import default_storage
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def upload_excel(request):
+    if request.method == 'POST' and request.FILES.get('excelFile'):
+        excel_file = request.FILES['excelFile']
+        file_path = default_storage.save(f'temp/{excel_file.name}', excel_file)
+
+        try:
+            # Read the Excel file and use the first row as headers
+            excel_data = pd.read_excel(default_storage.open(file_path), header=0)
+
+            # Log column headers for debugging
+            print("Column headers:", excel_data.columns.tolist())
+
+            for _, row in excel_data.iterrows():
+                # Handle VerksamhetsOmraden
+                sorteringsordning = row['A']  # Ensure 'A' matches the actual column name
+                omrade, created = VerksamhetsOmraden.objects.get_or_create(
+                    sorteringsordning=sorteringsordning,
+                    defaults={'namn': str(sorteringsordning)}
+                )
+
+                # Handle Company
+                company, created = Company.objects.get_or_create(
+                    namn=row['B'],  # Ensure 'B' matches the actual column name
+                    defaults={
+                        'organisationsnummer': row['C'],
+                        'kontaktperson': f"{row['D']} {row['E']}".strip(),
+                        'telefonnummer': row['F'],
+                        'epost': row['G']
+                    }
+                )
+                company.omraden.add(omrade)
+
+                # Handle Cities (H-M)
+                if pd.notna(row['H']):  # Check if the cell is not empty
+                    company.verksamma_stader.add(Stad.objects.get(namn='Malmö'))
+                    company.verksamma_stader.add(Stad.objects.get(namn='Lund'))
+                if pd.notna(row['I']):  # Check if the cell is not empty
+                    company.verksamma_stader.add(Stad.objects.get(namn='Helsingborg'))
+                if pd.notna(row['J']):  # Check if the cell is not empty
+                    company.verksamma_stader.add(Stad.objects.get(namn='Halmstad'))
+                if pd.notna(row['K']):  # Check if the cell is not empty
+                    company.verksamma_stader.add(Stad.objects.get(namn='Varberg'))
+                if pd.notna(row['L']):  # Check if the cell is not empty
+                    company.verksamma_stader.add(Stad.objects.get(namn='Växjö'))
+                if pd.notna(row['M']):  # Check if the cell is not empty
+                    company.verksamma_stader.add(Stad.objects.get(namn='Kalmar'))
+
+            return JsonResponse({'status': 'success', 'message': 'Data processed successfully.'})
+        except KeyError as e:
+            return JsonResponse({'status': 'error', 'message': f"Missing column: {str(e)}"}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+    return JsonResponse({'status': 'error', 'message': 'No file uploaded.'}, status=400)
+
+
+
+
+
+
+
+
 

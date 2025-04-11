@@ -52,4 +52,5 @@ urlpatterns = [
     path('companies/add/', views.add_company, name='add_company'),
     path('companies/edit/', views.edit_company, name='edit_company'),
     path('companies/delete/', views.delete_company, name='delete_company'),
+    path('upload_excel/', views.upload_excel, name='upload_excel'),
 ]
