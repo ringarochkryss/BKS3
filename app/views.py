@@ -172,7 +172,8 @@ def sok_foretags(request):
     return render(request, 'app/sok.html', context)
 
 def company_list(request):
-    companies = Company.objects.prefetch_related('omraden', 'verksamma_stader').all()
+    # Fetch companies sorted by Area (omraden) and then by Name (namn)
+    companies = Company.objects.prefetch_related('omraden', 'verksamma_stader').order_by('omraden__sorteringsordning', 'namn')
     omraden = VerksamhetsOmraden.objects.all()  # Fetch all available areas
     counties = Lan.objects.prefetch_related('stader').all()  # Fetch counties with their cities
 
@@ -185,6 +186,7 @@ def company_list(request):
         'omraden': omraden,
         'counties': counties,  # Pass counties and their cities
     })
+
 
 
 
@@ -206,22 +208,38 @@ def add_company(request):
 @csrf_exempt
 def edit_company(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        company = get_object_or_404(Company, id=data.get('id'))
-        company.omraden.set(data.get('omraden', []))  # Use .set() for many-to-many field
-        company.namn = data.get('namn')
-        company.epost = data.get('epost')
-        company.telefonnummer = data.get('telefonnummer')
-        company.verksamma_stader.set(data.get('verksamma_stader', []))  # Also fix for cities
-        company.konkurs = data.get('konkurs', False)
-        company.save()
-        return JsonResponse({'status': 'success'}, status=200)
+        try:
+            data = json.loads(request.body)
+            company_id = data.get('id')
+            company = Company.objects.get(id=company_id)
+
+            # Update company fields
+            company.namn = data.get('namn', company.namn)
+            company.epost = data.get('epost', company.epost)
+            company.telefonnummer = data.get('telefonnummer', company.telefonnummer)
+            company.konkurs = data.get('konkurs', company.konkurs)
+
+            # Update related fields
+            omraden_ids = data.get('omraden', [])
+            company.omraden.set(VerksamhetsOmraden.objects.filter(id__in=omraden_ids))
+
+            city_ids = data.get('cities', [])
+            company.verksamma_stader.set(Stad.objects.filter(id__in=city_ids))
+
+            company.save()
+            return JsonResponse({'success': True, 'message': 'Company updated successfully.'})
+        except Company.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Company not found.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)}, status=500)
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
 
 
 @csrf_exempt
 def delete_company(request):
     if request.method == 'POST':
         data = json.loads(request.body)
+        print("Received ID for deletion:", data.get('id'))  # Log the received ID
         company = get_object_or_404(Company, id=data.get('id'))
         company.delete()
         return JsonResponse({'status': 'success'}, status=200)

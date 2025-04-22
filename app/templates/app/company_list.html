@@ -2,28 +2,32 @@
 
 {% block content %}
 
-<div class="container">
+<div class="glass p-3 mt-5">
     <h2>Company List</h2>
+
+
     <button class="btn pillLG btn-dark btn-large py-2 px-4 mb-2 mx-3" data-bs-toggle="modal" data-bs-target="#addCompanyModal">
         <i class="fas fa-plus"></i> Add New
     </button>
 
-    <div class="mb-3 mt-2">
-        <button class="btn btn-dark btn-large py-2 px-4" data-bs-toggle="modal" data-bs-target="#uploadExcelModal">
-            Upload Excel
-        </button>
-    </div>
 
+    <button class="btn pillLG btn-dark btn-large py-2 px-4 mb-2 mx-3 float-end" data-bs-toggle="modal" data-bs-target="#uploadExcelModal">
+        Upload Excel
+    </button>
 
-    <table class="table table-bordered table-striped">
+    <table id="foretagslista" class="table table-bordered table-hover">
         <thead>
             <tr>
-                <th>Area</th>
-                <th>Name</th>
+                <th>
+                    <input type="text" id="searchArea" class="form-control" onkeyup="searchForetagFunction()" placeholder="Search Area" title="Search Area">
+                </th>
+                <th>
+                    <input type="text" id="searchNamn" class="form-control" onkeyup="searchForetagFunction()" placeholder="Search Name" title="Search Name">
+                </th>
                 <th>Email</th>
-                <th>Phone</th>
-                <th>City</th>
-                <th>Bankrupt</th>
+                <th>Telefon</th>
+                <th>Stad</th>
+                <th>Konkurs</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -49,7 +53,7 @@
                 </td>
                 <td><input type="checkbox" {% if company.konkurs %}checked{% endif %} disabled></td>
                 <td>
-                    <button class="btn btn-small pill btn-outline-dark btn-large px-2" data-bs-toggle="modal" data-bs-target="#editModal"
+                    <button class="btn btn-small pill btn-outline-dark btn-large px-1" data-bs-toggle="modal" data-bs-target="#editModal"
                             data-id="{{ company.id }}"
                             data-omraden="{{ company.omraden_ids|join:',' }}"
                             data-namn="{{ company.namn }}"
@@ -57,9 +61,9 @@
                             data-telefonnummer="{{ company.telefonnummer }}"
                             data-verksamma_stader="{{ company.city_ids|join:',' }}"
                             data-konkurs="{{ company.konkurs }}">
-                        Edit
+                        <i class="fas fa-pencil-alt"></i>
                     </button>
-                    <button class="btn btn-small pill btn-dark btn-large px-3" onclick="confirmDelete({{ company.id }})">Delete</button>
+                    <button class="btn btn-small pill btn-dark btn-large px-1" onclick="confirmDelete({{ company.id }})"><i class="fas fa-times fa-fw"></i></button>
                 </td>
             </tr>
             {% endfor %}
@@ -189,7 +193,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn pillLG btn-dark btn-large py-2 px-4">Cancel</button>
-                <button type="button" class="btn pillLG btn-dark btn-large py-2 px-4">Delete</button>
+                <button type="button" id="confirmDeleteButton" class="btn pillLG btn-dark btn-large py-2 px-4">Delete</button>
             </div>
         </div>
     </div>
@@ -299,94 +303,149 @@
         }
     });
 
-    // Handle "Edit Company" form submission
-    document.getElementById('editForm').addEventListener('submit', function (event) {
-        event.preventDefault();
-        var id = document.getElementById('editCompanyId').value;
-        var cities = Array.from(document.getElementById('editCities').selectedOptions).map(option => option.value);
-        var omraden = document.getElementById('editOmraden').value;
-        var ikon = document.getElementById('editIkon').value;
-        var namn = document.getElementById('editNamn').value;
-        var epost = document.getElementById('editEpost').value;
-        var telefonnummer = document.getElementById('editTelefonnummer').value;
-        var konkurs = document.getElementById('editKonkurs').checked;
 
-        fetch('{% url "edit_company" %}', {
+	// Function to refresh the company table
+	function refreshCompanyTable() {
+		fetch('{% url "company_list" %}')
+			.then(response => response.text())
+			.then(html => {
+				// Parse the HTML response and update the table body
+				const parser = new DOMParser();
+				const doc = parser.parseFromString(html, 'text/html');
+				const newTableBody = doc.querySelector('#foretagslista tbody');
+				document.querySelector('#foretagslista tbody').innerHTML = newTableBody.innerHTML;
+			})
+			.catch(error => console.error('Error refreshing table:', error));
+	}
+
+	// Edit Company
+	document.getElementById('editForm').addEventListener('submit', function (event) {
+		event.preventDefault();
+		var id = document.getElementById('editCompanyId').value;
+		var cities = Array.from(document.getElementById('editCities').selectedOptions).map(option => option.value);
+		var omraden = Array.from(document.getElementById('editOmraden').selectedOptions).map(option => option.value);
+		var namn = document.getElementById('editNamn').value;
+		var epost = document.getElementById('editEpost').value;
+		var telefonnummer = document.getElementById('editTelefonnummer').value;
+		var konkurs = document.getElementById('editKonkurs').checked;
+
+		fetch('{% url "edit_company" %}', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': csrftoken
+			},
+			body: JSON.stringify({
+				id: id,
+				omraden: omraden,
+				namn: namn,
+				epost: epost,
+				telefonnummer: telefonnummer,
+				cities: cities,
+				konkurs: konkurs
+			})
+		}).then(response => {
+			if (response.ok) {
+				refreshCompanyTable(); // Refresh the table after editing
+				document.getElementById('editModal').querySelector('.btn-close').click(); // Close the modal
+			} else {
+				alert('Failed to update the company. Please try again.');
+			}
+		}).catch(error => {
+			console.error('Error:', error);
+			alert('An unexpected error occurred.');
+		});
+	});
+
+	//  Delete Company
+	function confirmDelete(id) {
+		var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+		deleteModal.show();
+
+		document.getElementById('confirmDeleteButton').onclick = function () {
+			fetch('{% url "delete_company" %}', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': csrftoken
+				},
+				body: JSON.stringify({
+					id: id
+				})
+			}).then(response => {
+				if (response.ok) {
+					refreshCompanyTable(); // Refresh the table after deletion
+					deleteModal.hide(); // Close the modal
+				} else {
+					alert('Failed to delete the company. Please try again.');
+				}
+			}).catch(error => {
+				console.error('Error:', error);
+				alert('An unexpected error occurred.');
+			});
+		};
+	}
+
+
+    document.getElementById('uploadExcelForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        var formData = new FormData();
+        var fileInput = document.getElementById('excelFile');
+        formData.append('excelFile', fileInput.files[0]);
+
+        fetch('{% url "upload_excel" %}', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'X-CSRFToken': csrftoken
             },
-            body: JSON.stringify({
-                id: id,
-                omraden: omraden,
-                ikon: ikon,
-                namn: namn,
-                epost: epost,
-                telefonnummer: telefonnummer,
-                cities: cities,
-                konkurs: konkurs
-            })
+            body: formData
         }).then(response => {
             if (response.ok) {
-                location.reload();
+                response.json().then(data => {
+                    alert('Success: ' + data.message || 'File uploaded and data processed successfully!');
+                    location.reload(); // Reload the page to reflect new data
+                });
+            } else {
+                response.json().then(data => {
+                    alert('Error: ' + data.message || 'Failed to upload and process file.');
+                });
             }
+        }).catch(error => {
+            alert('Error: An unexpected error occurred.');
+            console.error(error);
         });
     });
 
 
-    // Hantera "Ta bort Foretag"-modalen
-    function confirmDelete(id) {
-        var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        deleteModal.show();
-        document.getElementById('confirmDeleteButton').onclick = function () {
-            fetch('{% url "delete_company" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken
-                },
-                body: JSON.stringify({
-                    id: id
-                })
-            }).then(response => {
-                if (response.ok) {
-                    location.reload();
+    function searchForetagFunction() {
+        var areaInput, namnInput, areaFilter, namnFilter, table, tr, tdArea, tdNamn, i, txtValueArea, txtValueNamn;
+        areaInput = document.getElementById("searchArea");
+        namnInput = document.getElementById("searchNamn");
+        areaFilter = areaInput.value.toUpperCase();
+        namnFilter = namnInput.value.toUpperCase();
+        table = document.getElementById("foretagslista");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 1; i < tr.length; i++) { // Start from 1 to skip the header row
+            tdArea = tr[i].getElementsByTagName("td")[0]; // Area column
+            tdNamn = tr[i].getElementsByTagName("td")[1]; // Namn column
+            if (tdArea && tdNamn) {
+                txtValueArea = tdArea.textContent || tdArea.innerText;
+                txtValueNamn = tdNamn.textContent || tdNamn.innerText;
+
+                // Show row if it matches either filter
+                if (
+                    (txtValueArea.toUpperCase().indexOf(areaFilter) > -1 || areaFilter === "") &&
+                    (txtValueNamn.toUpperCase().indexOf(namnFilter) > -1 || namnFilter === "")
+                ) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
                 }
-            });
-        };
+            }
+        }
     }
-
-	document.getElementById('uploadExcelForm').addEventListener('submit', function (event) {
-		event.preventDefault();
-		var formData = new FormData();
-		var fileInput = document.getElementById('excelFile');
-		formData.append('excelFile', fileInput.files[0]);
-
-		fetch('{% url "upload_excel" %}', {
-			method: 'POST',
-			headers: {
-				'X-CSRFToken': csrftoken
-			},
-			body: formData
-		}).then(response => {
-			if (response.ok) {
-				response.json().then(data => {
-					alert('Success: ' + data.message || 'File uploaded and data processed successfully!');
-					location.reload(); // Reload the page to reflect new data
-				});
-			} else {
-				response.json().then(data => {
-					alert('Error: ' + data.message || 'Failed to upload and process file.');
-				});
-			}
-		}).catch(error => {
-			alert('Error: An unexpected error occurred.');
-			console.error(error);
-		});
-	});
-
-
 </script>
 
 {% endblock %}
+

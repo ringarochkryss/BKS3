@@ -3,13 +3,13 @@
 {% block content %}
 
 
-<div class="container">
+<div class="glass p-3 mt-5">
 	<h2>Projektlista</h2>
 		<button class="btn pillLG btn-dark btn-large py-2 px-4 mb-2 mx-3" data-bs-toggle="modal" data-bs-target="#addProjectModal">Lägg till Projekt</button>
 		<button class="btn pillLG btn-dark btn-outline-large py-2 px-4 mb-2 mx-3 float-end">{% if show_archived %}Dolj Arkiverade{% else %}Visa Arkiverade{% endif %}</button>
 
 
-	<table class="table table-bordered table-striped">
+	<table class="table table-bordered table-hover">
 		<thead>
 			<tr>
 				<th>Namn</th>

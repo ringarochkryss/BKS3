@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div class="row container-fluid">
+<div class="row glass p-3 mt-5">
 	<div class="col-8 col-xl-9">
 		<h3>{{ project.name }}</h3>
 		<p>
@@ -17,7 +17,7 @@
 		<div class="col-8 col-xl-9">
 			<form method="post" action="{% url 'update_status' project.id %}" id="statusForm">
 				{% csrf_token %}
-				<table class="table table-bordered table-striped">
+				<table class="table table-bordered table-hover">
 					<thead>
 						<tr>
 							<th>Konto</th>

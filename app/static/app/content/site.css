@@ -63,6 +63,10 @@ form-signin {
     align-items: center !important;
 }
 
+
+.table-hover tbody tr:hover td {
+    background-color: rgba( 34, 87, 183, 0.45 );
+}
 .center {
     align-items: center;
     justify-content:center;
@@ -172,6 +176,16 @@ form-signin {
 .pillLG {
     border-radius: 8em !important;
     padding: 2px;
+}
+
+.glassbutton {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #3260a8;
 }
 
 .btn-outline-primary {
