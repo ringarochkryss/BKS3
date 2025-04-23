@@ -53,13 +53,13 @@
                     {% endif %}
 
                     {% if user.is_authenticated and user.is_superuser %}
-                    <li class="nav-item mx-4"><a class="btn pillLG btn-outline-dark glassbutton btn-large py-2 px-4" href="{% url 'administrator' %}"><i class="fas fa-user-secret"></i>&nbsp; Administrator</a></li>
-                    <li class="nav-item mx-4"><a class="btn pillLG btn-outline-dark glassbutton btn-large py-2 px-4" href="{% url 'area_list' %}"><i class="fas fa-clipboard-list"></i>&nbsp;Arealista</a></li>
+                    <!--<li class="nav-item mx-4"><a class="btn pillLG btn-outline-dark glassbutton btn-large py-2 px-4" href="{% url 'administrator' %}"><i class="fas fa-user-secret"></i>&nbsp; Administrator</a></li>-->
+                    <li class="nav-item mx-4"><a class="btn pillLG btn-outline-dark glassbutton btn-large py-2 px-4" href="{% url 'area_list' %}"><i class="fas fa-clipboard-list"></i>&nbsp;Kontoplan</a></li>
                     <li class="nav-item mx-4"><a class="btn pillLG btn-outline-dark glassbutton btn-large py-2 px-4" href="{% url 'company_list' %}"><i class="fas fa-clipboard-list"></i>&nbsp;Foretagslista</a></li>
                     {% endif %}
 
-                    <li class="nav-item mx-4"><a class="btn pillLG btn-outline-dark glassbutton btn-large py-2 px-4" href="{% url 'about' %}"><i class="fas fa-book-reader"></i>&nbsp; Om</a></li>
-                    <li class="nav-item mx-4"><a class="btn pillLG btn-outline-dark glassbutton btn-large py-2 px-4" href="{% url 'contact' %}"><i class="fas fa-mobile-alt"></i>&nbsp; Kontakt</a></li>
+                    <!--<li class="nav-item mx-4"><a class="btn pillLG btn-outline-dark glassbutton btn-large py-2 px-4" href="{% url 'about' %}"><i class="fas fa-book-reader"></i>&nbsp; Om</a></li>
+                    <li class="nav-item mx-4"><a class="btn pillLG btn-outline-dark glassbutton btn-large py-2 px-4" href="{% url 'contact' %}"><i class="fas fa-mobile-alt"></i>&nbsp; Kontakt</a></li>-->
                 </ul>
                 {% include 'app/loginpartial.html' %}
             </div>
