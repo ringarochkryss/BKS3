@@ -56,6 +56,30 @@
 	</table>
 </div>
 
+
+<!-- Upload Excel Modal -->
+<div class="modal fade" id="uploadExcelModal" tabindex="-1" aria-labelledby="uploadExcelModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="uploadExcelModalLabel">Upload Excel</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form id="uploadExcelForm" enctype="multipart/form-data">
+					<div class="mb-3">
+						<label for="excelFile" class="form-label">Select Excel File</label>
+						<input type="file" class="form-control" id="excelFile" name="excelFile" accept=".xlsx, .xls" required>
+					</div>
+					<button type="submit" class="btn pillLG btn-dark btn-large py-2 px-4">
+						<i class="fas fa-upload"></i> Upload
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
 <!-- Add Area Modal -->
 <div class="modal fade" id="addAreaModal" tabindex="-1" aria-labelledby="addAreaModalLabel" aria-hidden="true">
 	<div class="modal-dialog" role="document">
@@ -163,6 +187,43 @@
 		return cookieValue;
 	}
 	const csrftoken = getCookie('csrftoken');
+
+	// Handle "Upload Excel" form submission
+	document.getElementById('uploadExcelForm').addEventListener('submit', function (event) {
+		event.preventDefault(); // Förhindra standardformulärskickning
+
+		// Hämta filen från formuläret
+		var excelFile = document.getElementById('excelFile').files[0];
+		if (!excelFile) {
+			alert('Please select a file.');
+			return;
+		}
+
+		// Skapa en FormData-objekt för att skicka filen
+		var formData = new FormData();
+		formData.append('excelFile', excelFile);
+
+		// Skicka POST-förfrågan till backend
+		fetch('{% url "upload_excel" %}', {
+			method: 'POST',
+			headers: {
+				'X-CSRFToken': csrftoken // CSRF-token krävs av Django
+			},
+			body: formData
+		}).then(response => response.json())
+			.then(data => {
+				if (data.status === 'success') {
+					alert('Excel file uploaded successfully!');
+					location.reload(); // Ladda om sidan för att visa uppdaterad data
+				} else {
+					alert('Failed to upload Excel file: ' + (data.message || 'Unknown error'));
+				}
+			}).catch(error => {
+				console.error('Error:', error);
+				alert('An unexpected error occurred.');
+			});
+	});
+
 
 	// Handle "Add Area" form submission
 	document.getElementById('addAreaForm').addEventListener('submit', function (event) {

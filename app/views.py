@@ -360,6 +360,32 @@ def delete_area(request):
             print("Error in delete_area:", str(e))  # Debug log
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
+@csrf_exempt
+def upload_excel(request):
+    """Handles uploading and processing an Excel file."""
+    if request.method == 'POST' and request.FILES.get('excelFile'):
+        excel_file = request.FILES['excelFile']
+
+        try:
+            # Läs Excel-filen
+            df = pd.read_excel(excel_file)
+
+            # Kontrollera att nödvändiga kolumner finns
+            if 'A' not in df.columns or 'B' not in df.columns:
+                return JsonResponse({'status': 'error', 'message': 'Missing required columns: A (Sorteringsordning) and B (Name)'}, status=400)
+
+            # Iterera över raderna och spara till databasen
+            for _, row in df.iterrows():
+                VerksamhetsOmraden.objects.create(
+                    sorteringsordning=row['A'],
+                    namn=row['B']
+                )
+
+            return JsonResponse({'status': 'success', 'message': 'Data processed successfully.'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+    return JsonResponse({'status': 'error', 'message': 'No file uploaded.'}, status=400)
 
 
 
