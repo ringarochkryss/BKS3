@@ -53,4 +53,14 @@ urlpatterns = [
     path('companies/edit/', views.edit_company, name='edit_company'),
     path('companies/delete/', views.delete_company, name='delete_company'),
     path('upload_excel/', views.upload_excel, name='upload_excel'),
+
+    # Area List
+    path('areas/', views.area_list, name='area_list'),
+    #path('areas/add/', views.add_area, name='add_area'),
+    path('add_area/', views.add_area, name='add_area'),
+    # path('areas/edit/', views.edit_area, name='edit_area'),
+    path('edit_area/', views.edit_area, name='edit_area'),
+    # path('areas/delete/', views.delete_area, name='delete_area'),
+    path('delete_area/', views.delete_area, name='delete_area'),
+
 ]

@@ -338,3 +338,73 @@ input[type="checkbox"].input-validation-error {
     }
 }
 
+/*customer colors*/
+
+.blue {
+    color: darkblue;
+}
+
+.lightblue {
+    color: #98DDDF;
+}
+
+.darkblue {
+    color: #2E5283;
+}
+
+.orange {
+    color: #E2552D;
+}
+
+.darkred {
+    color: darkred;
+}
+
+.green {
+    color: #6F8D6A;
+}
+
+.lightgreen {
+    color: #A6BE47;
+}
+
+.lime {
+    color: #D7E8BC;
+}
+.yellow {
+    color: #E3BD33;
+}
+
+.pink {
+    color: #C67FAE;
+}
+
+.purple {
+    color: rebeccapurple;
+}
+
+.black {
+    color: black;
+}
+
+.brown {
+    color: #A47864;
+}
+
+.grey {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.beige {
+    color: #C9B27C;
+}
+
+.teal {
+    color: teal;
+}
+
+.turkos {
+    color: darkturquoise;
+}
+
+

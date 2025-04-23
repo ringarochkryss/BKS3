@@ -4634,6 +4634,7 @@
     <Content Include="app\static\app\img\bkslogovittranspbg.PNG" />
     <Content Include="app\static\app\img\karla4.jpg" />
     <Content Include="app\templates\app\administrator.html" />
+    <Content Include="app\templates\app\area_list.html" />
     <Content Include="app\templates\app\company_list.html" />
     <Content Include="app\templates\app\projects.html" />
     <Content Include="app\templates\app\sok.html" />

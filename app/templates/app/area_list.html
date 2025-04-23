@@ -1,0 +1,343 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<div class="glass p-3 mt-5">
+	<h2>Area List</h2>
+
+	<!-- Add New Button -->
+	<button class="btn pillLG btn-dark btn-large py-2 px-4 mb-2 mx-3" data-bs-toggle="modal" data-bs-target="#addAreaModal">
+		<i class="fas fa-plus"></i> Add New
+	</button>
+
+	<!-- Upload Excel Button -->
+	<button class="btn pillLG btn-dark btn-large py-2 px-4 mb-2 mx-3 float-end" data-bs-toggle="modal" data-bs-target="#uploadExcelModal">
+		Upload Excel
+	</button>
+
+	<!-- Table -->
+	<table id="areaTable" class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th>
+					<input type="text" id="searchSorteringsordning" class="form-control" onkeyup="searchAreaFunction()" placeholder="Kontering" title="Search Order">
+				</th>
+				<th>
+					<input type="text" id="searchNamn" class="form-control" onkeyup="searchAreaFunction()" placeholder="Namn" title="Search Name">
+				</th>
+				<th>Ikon</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for area in areas %}
+			<tr>
+				<td>{{ area.sorteringsordning }}</td>
+				<td>{{ area.namn }}</td>
+				<td>
+					<span class="circleSm m-1 {{ area.farg_css_klass }}">
+						<i class="{{ area.ikon }}"></i>
+					</span>
+				</td>
+				<td>
+					<button class="btn btn-small pill btn-outline-dark btn-large px-1" data-bs-toggle="modal" data-bs-target="#editAreaModal"
+							data-id="{{ area.id }}"
+							data-sorteringsordning="{{ area.sorteringsordning }}"
+							data-namn="{{ area.namn }}"
+							data-ikon="{{ area.ikon }}"
+							data-farg_css_klass="{{ area.farg_css_klass }}">
+						<i class="fas fa-pencil-alt"></i>
+					</button>
+					<button class="btn btn-small pill btn-dark btn-large px-1" onclick="confirmDelete({{ area.id }})"><i class="fas fa-times fa-fw"></i></button>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+<!-- Add Area Modal -->
+<div class="modal fade" id="addAreaModal" tabindex="-1" aria-labelledby="addAreaModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="addAreaModalLabel">Lagg till ny</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form id="addAreaForm">
+					<div class="mb-3">
+						<label for="addSorteringsordning" class="form-label">Kontering</label>
+						<input type="number" class="form-control" id="addSorteringsordning" required>
+					</div>
+					<div class="mb-3">
+						<label for="addNamn" class="form-label">Namn</label>
+						<input type="text" class="form-control" id="addNamn" required>
+					</div>
+					<div class="mb-3">
+						<label for="addIkon" class="form-label">Ikon</label>
+						<input type="text" class="form-control" id="addIkon" placeholder="fas fa-car" required>
+					</div>
+					<div class="mb-3">
+						<label for="addFargCssKlass" class="form-label">Color Class</label>
+						<input type="text" class="form-control" id="addFargCssKlass" placeholder="green" required>
+					</div>
+					<button type="submit" class="btn pillLG btn-dark btn-large py-2 px-4">
+						<i class="fas fa-save"></i> Save
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Edit Area Modal -->
+<div class="modal fade" id="editAreaModal" tabindex="-1" aria-labelledby="editAreaModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="editAreaModalLabel">Redigera</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form id="editAreaForm">
+					<input type="hidden" id="editAreaId">
+					<div class="mb-3">
+						<label for="editSorteringsordning" class="form-label">Kontering</label>
+						<input type="number" class="form-control" id="editSorteringsordning" required>
+					</div>
+					<div class="mb-3">
+						<label for="editNamn" class="form-label">Namn</label>
+						<input type="text" class="form-control" id="editNamn" required>
+					</div>
+					<div class="mb-3">
+						<label for="editIkon" class="form-label">Ikon</label>
+						<input type="text" class="form-control" id="editIkon" required>
+					</div>
+					<div class="mb-3">
+						<label for="editFargCssKlass" class="form-label">Color Class</label>
+						<input type="text" class="form-control" id="editFargCssKlass" required>
+					</div>
+					<button type="submit" class="btn pillLG btn-dark btn-large py-2 px-4">
+						<i class="fas fa-save"></i> Spara
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal fade" id="deleteAreaModal" tabindex="-1" aria-labelledby="deleteAreaModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="deleteAreaModalLabel">Confirm Deletion</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				Are you sure you want to delete?
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn pillLG btn-dark btn-large py-2 px-4" data-bs-dismiss="modal">Cancel</button>
+				<button type="button" id="confirmDeleteButton" class="btn pillLG btn-dark btn-large py-2 px-4">Delete</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	//(Django kräver en CSRF-token för POST-förfrågningar)
+	function getCookie(name) {
+		let cookieValue = null;
+		if (document.cookie && document.cookie !== '') {
+			const cookies = document.cookie.split(';');
+			for (let i = 0; i < cookies.length; i++) {
+				const cookie = cookies[i].trim();
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+	const csrftoken = getCookie('csrftoken');
+
+	// Handle "Add Area" form submission
+	document.getElementById('addAreaForm').addEventListener('submit', function (event) {
+		event.preventDefault(); // Förhindra standardformulärskickning
+
+		// Hämta värden från formuläret
+		var sorteringsordning = document.getElementById('addSorteringsordning').value;
+		var namn = document.getElementById('addNamn').value;
+		var ikon = document.getElementById('addIkon').value;
+		var fargCssKlass = document.getElementById('addFargCssKlass').value;
+
+		// Skicka POST-förfrågan till backend
+		fetch('{% url "add_area" %}', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': csrftoken // CSRF-token krävs av Django
+			},
+			body: JSON.stringify({
+				sorteringsordning: sorteringsordning,
+				namn: namn,
+				ikon: ikon,
+				farg_css_klass: fargCssKlass
+			})
+		}).then(response => response.json())
+			.then(data => {
+				if (data.id) {
+					// Om området skapades framgångsrikt, ladda om sidan
+					location.reload();
+				} else {
+					// Visa felmeddelande om något gick fel
+					alert('Failed to add the area: ' + (data.message || 'Unknown error'));
+				}
+			}).catch(error => {
+				console.error('Error:', error);
+				alert('An unexpected error occurred.');
+			});
+	});
+
+
+	// Handle "Edit Area" modal population
+	var editAreaModal = document.getElementById('editAreaModal');
+	editAreaModal.addEventListener('show.bs.modal', function (event) {
+		var button = event.relatedTarget; // Button that triggered the modal
+		var id = button.getAttribute('data-id');
+		var sorteringsordning = button.getAttribute('data-sorteringsordning');
+		var namn = button.getAttribute('data-namn');
+		var ikon = button.getAttribute('data-ikon');
+		var fargCssKlass = button.getAttribute('data-farg_css_klass');
+
+		// Populate the modal fields with the existing values
+		var modal = this;
+		modal.querySelector('#editAreaId').value = id;
+		modal.querySelector('#editSorteringsordning').value = sorteringsordning;
+		modal.querySelector('#editNamn').value = namn;
+		modal.querySelector('#editIkon').value = ikon;
+		modal.querySelector('#editFargCssKlass').value = fargCssKlass;
+	});
+
+	// Handle "Edit Area" form submission
+	document.getElementById('editAreaForm').addEventListener('submit', function (event) {
+		event.preventDefault();
+		var id = document.getElementById('editAreaId').value;
+		var sorteringsordning = document.getElementById('editSorteringsordning').value;
+		var namn = document.getElementById('editNamn').value;
+		var ikon = document.getElementById('editIkon').value;
+		var fargCssKlass = document.getElementById('editFargCssKlass').value;
+
+		fetch('{% url "edit_area" %}', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': csrftoken
+			},
+			body: JSON.stringify({
+				id: id,
+				sorteringsordning: sorteringsordning,
+				namn: namn,
+				ikon: ikon,
+				farg_css_klass: fargCssKlass
+			})
+		}).then(response => {
+			if (response.ok) {
+				location.reload(); // Reload the page to reflect the changes
+			} else {
+				alert('Failed to update the area. Please try again.');
+			}
+		}).catch(error => {
+			console.error('Error:', error);
+			alert('An unexpected error occurred.');
+		});
+	});
+
+	// Handle "Confirm Delete" functionality
+	function confirmDelete(id) {
+		var deleteModal = new bootstrap.Modal(document.getElementById('deleteAreaModal'));
+		deleteModal.show();
+
+		// Set up the delete button in the modal
+		document.getElementById('confirmDeleteButton').onclick = function () {
+			fetch('{% url "delete_area" %}', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': csrftoken
+				},
+				body: JSON.stringify({
+					id: id
+				})
+			}).then(response => {
+				if (response.ok) {
+					location.reload(); // Reload the page to reflect the deletion
+				} else {
+					alert('Failed to delete the area. Please try again.');
+				}
+			}).catch(error => {
+				console.error('Error:', error);
+				alert('An unexpected error occurred.');
+			});
+		};
+	}
+	//fanga fel i felmeddelande
+	fetch('{% url "edit_area" %}', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken
+		},
+		body: JSON.stringify({
+			id: id,
+			sorteringsordning: sorteringsordning,
+			namn: namn,
+			ikon: ikon,
+			farg_css_klass: fargCssKlass
+		})
+	}).then(response => response.json())
+		.then(data => {
+			if (data.success) {
+				location.reload(); // Reload the page to reflect the changes
+			} else {
+				alert('Failed to update the area: ' + data.message);
+			}
+		}).catch(error => {
+			console.error('Error:', error);
+			alert('An unexpected error occurred.');
+		});
+
+	// Search Functionality
+	function searchAreaFunction() {
+		var orderInput, nameInput, orderFilter, nameFilter, table, tr, tdOrder, tdName, i, txtValueOrder, txtValueName;
+		orderInput = document.getElementById("searchSorteringsordning");
+		nameInput = document.getElementById("searchNamn");
+		orderFilter = orderInput.value.toUpperCase();
+		nameFilter = nameInput.value.toUpperCase();
+		table = document.getElementById("areaTable");
+		tr = table.getElementsByTagName("tr");
+
+		for (i = 1; i < tr.length; i++) { // Start from 1 to skip the header row
+			tdOrder = tr[i].getElementsByTagName("td")[0]; // Order column
+			tdName = tr[i].getElementsByTagName("td")[1]; // Name column
+			if (tdOrder && tdName) {
+				txtValueOrder = tdOrder.textContent || tdOrder.innerText;
+				txtValueName = tdName.textContent || tdName.innerText;
+
+				// Show row if it matches either filter
+				if (
+					(txtValueOrder.toUpperCase().indexOf(orderFilter) > -1 || orderFilter === "") &&
+					(txtValueName.toUpperCase().indexOf(nameFilter) > -1 || nameFilter === "")
+				) {
+					tr[i].style.display = "";
+				} else {
+					tr[i].style.display = "none";
+				}
+			}
+		}
+	}</script>
+
+{% endblock %}

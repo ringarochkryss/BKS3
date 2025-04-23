@@ -187,9 +187,6 @@ def company_list(request):
         'counties': counties,  # Pass counties and their cities
     })
 
-
-
-
 @csrf_exempt
 def add_company(request):
     if request.method == 'POST':
@@ -304,6 +301,64 @@ def upload_excel(request):
 
     return JsonResponse({'status': 'error', 'message': 'No file uploaded.'}, status=400)
 
+
+def area_list(request):
+    """Renders the area list page."""
+    areas = VerksamhetsOmraden.objects.all().order_by('sorteringsordning', 'namn')
+    return render(request, 'app/area_list.html', {
+        'areas': areas,
+    })
+
+@csrf_exempt
+def add_area(request):
+    """Handles adding a new area."""
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        area = VerksamhetsOmraden.objects.create(
+            sorteringsordning=data.get('sorteringsordning'),
+            namn=data.get('namn'),
+            ikon=data.get('ikon'),
+            farg_css_klass=data.get('farg_css_klass')
+        )
+        return JsonResponse({'id': area.id}, status=201)
+
+@csrf_exempt
+def edit_area(request):
+    """Handles editing an existing area."""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            print("Edit Request Data:", data)  # Debug log
+            area_id = data.get('id')
+            area = VerksamhetsOmraden.objects.get(id=area_id)
+
+            # Update area fields
+            area.sorteringsordning = data.get('sorteringsordning', area.sorteringsordning)
+            area.namn = data.get('namn', area.namn)
+            area.ikon = data.get('ikon', area.ikon)
+            area.farg_css_klass = data.get('farg_css_klass', area.farg_css_klass)
+            area.save()
+
+            return JsonResponse({'success': True, 'message': 'Area updated successfully.'})
+        except VerksamhetsOmraden.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Area not found.'}, status=404)
+        except Exception as e:
+            print("Error in edit_area:", str(e))  # Debug log
+            return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+@csrf_exempt
+def delete_area(request):
+    """Handles deleting an area."""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            print("Delete Request Data:", data)  # Debug log
+            area = get_object_or_404(VerksamhetsOmraden, id=data.get('id'))
+            area.delete()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            print("Error in delete_area:", str(e))  # Debug log
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 
 

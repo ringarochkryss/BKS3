@@ -54,6 +54,7 @@
 
                     {% if user.is_authenticated and user.is_superuser %}
                     <li class="nav-item mx-4"><a class="btn pillLG btn-outline-dark glassbutton btn-large py-2 px-4" href="{% url 'administrator' %}"><i class="fas fa-user-secret"></i>&nbsp; Administrator</a></li>
+                    <li class="nav-item mx-4"><a class="btn pillLG btn-outline-dark glassbutton btn-large py-2 px-4" href="{% url 'area_list' %}"><i class="fas fa-clipboard-list"></i>&nbsp;Arealista</a></li>
                     <li class="nav-item mx-4"><a class="btn pillLG btn-outline-dark glassbutton btn-large py-2 px-4" href="{% url 'company_list' %}"><i class="fas fa-clipboard-list"></i>&nbsp;Foretagslista</a></li>
                     {% endif %}
 
