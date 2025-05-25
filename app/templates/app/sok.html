@@ -14,12 +14,12 @@
 
                 <!-- Land -->
                 <!--<div class="col-6 col-md-4 col-lg-2">
-                    <label for="land">Land</label>
-                    <select name="land" class="form-select form-select-lg mb-3" aria-label="Search Country">
-                        {% for land in lander %}
-                        <option value="{{ land.id }}" {% if land.id|stringformat:"s" in request.GET.land %}selected{% endif %}>{{ land.namn }}</option>                    {% endfor %}
-                    </select>
-                </div>-->
+        <label for="land">Land</label>
+        <select name="land" class="form-select form-select-lg mb-3" aria-label="Search Country">
+            {% for land in lander %}
+            <option value="{{ land.id }}" {% if land.id|stringformat:"s" in request.GET.land %}selected{% endif %}>{{ land.namn }}</option>                    {% endfor %}
+        </select>
+    </div>-->
                 <!-- Lan och Stad -->
                 <div class="accordion" id="accordionExample">
                     <div class="accordion-item">
@@ -77,49 +77,64 @@
                                 VÄLJ VERKSAMHET
                             </button>
                         </h2>
-
                         <div id="collapseOmrade" class="accordion-collapse collapse" aria-labelledby="headingOmrade" data-bs-parent="#accordionExampleOmrade">
                             <div class="accordion-body">
-                  
-                                <div class="form-check" id="omradeList">
-                                    {% for omrade in omraden|dictsort:"namn" %}
-                                    <div class="d-flex align-items-center accordion-item py-2">
-                                        <input type="checkbox" class="btn-check omrade-checkbox" id="omrade-{{ omrade.id }}" name="omrade" value="{{ omrade.id }}">
-                                        <label class="btn btn btn-outline-primary me-2" for="omrade-{{ omrade.id }}">Välj</label>
-                                        <span>{{ omrade.sorteringsordning }} - {{ omrade.namn }}</span>
+                                <div class="table-responsive">
+                                    <div class="mb-2">
+                                        <input type="text" id="omradeSearch" class="form-control" placeholder="Sök konto eller verksamhet...">
                                     </div>
-                                    {% endfor %}
+                                    <table class="table table-sm table-bordered align-middle mb-0" id="omradeTable">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 80px;"></th>
+                                                <th style="width: 120px;">Konto</th>
+                                                <th>Namn</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="omradeTableBody">
+                                            {% for omrade in omraden|dictsort:"namn" %}
+                                            <tr class="omrade-row">
+                                                <td>
+                                                    <input type="checkbox" class="btn-check omrade-checkbox" id="omrade-{{ omrade.id }}" name="omrade" value="{{ omrade.id }}">
+                                                    <label class="btn btn-outline-primary btn-sm" for="omrade-{{ omrade.id }}">Välj</label>
+                                                </td>
+                                                <td>{{ omrade.sorteringsordning }}</td>
+                                                <td>{{ omrade.namn }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        </table>
+                                        <div id="noOmradeMatch" class="text-muted" style="display:none;">Inga områden matchar din sökning.</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!--storlek-->
-                <div class="accordion" id="accordionExampleStorlek">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingStorlek">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStorlek" aria-expanded="true" aria-controls="collapseStorlek">
-                                VÄLJ STORLEK
-                            </button>
-                        </h2>
-                        <div id="collapseStorlek" class="accordion-collapse collapse" aria-labelledby="headingStorlek" data-bs-parent="#accordionExampleStorlek">
-                            <div class="accordion-body">
-                                <div class="form-check">
-                                    {% for storlek in storlekar|dictsort:"namn" %}
-                                    <div class="d-flex align-items-center accordion-item py-2">
-                                        <input type="checkbox" class="btn-check storlek-checkbox" id="storlek-{{ storlek.id }}" name="storlek" value="{{ storlek.id }}">
-                                        <label class="btn btn btn-outline-primary me-2" for="storlek-{{ storlek.id }}">Välj</label>
-                                        <span>{{ storlek.namn }}</span>
+                    <!--storlek-->
+                    <div class="accordion" id="accordionExampleStorlek">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingStorlek">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStorlek" aria-expanded="true" aria-controls="collapseStorlek">
+                                    VÄLJ STORLEK
+                                </button>
+                            </h2>
+                            <div id="collapseStorlek" class="accordion-collapse collapse" aria-labelledby="headingStorlek" data-bs-parent="#accordionExampleStorlek">
+                                <div class="accordion-body">
+                                    <div class="form-check">
+                                        {% for storlek in storlekar|dictsort:"namn" %}
+                                        <div class="d-flex align-items-center accordion-item py-2">
+                                            <input type="checkbox" class="btn-check storlek-checkbox" id="storlek-{{ storlek.id }}" name="storlek" value="{{ storlek.id }}">
+                                            <label class="btn btn btn-outline-primary me-2" for="storlek-{{ storlek.id }}">Välj</label>
+                                            <span>{{ storlek.namn }}</span>
+                                        </div>
+                                        {% endfor %}
                                     </div>
-                                    {% endfor %}
                                 </div>
                             </div>
-                        </div>
 
+                        </div>
                     </div>
                 </div>
-
             </form>
         </div>
     </div>
@@ -210,172 +225,198 @@
     </div>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const lanCheckboxes = document.querySelectorAll('.lan-checkbox');
-        const stadCheckboxes = document.querySelectorAll('.stad-checkbox');
-        const omradeCheckboxes = document.querySelectorAll('.omrade-checkbox');
-        const storlekCheckboxes = document.querySelectorAll('.storlek-checkbox');
-        //Select rows & send to project
-        const selectAllCheckbox = document.getElementById('select-all-checkbox');
-        const companyCheckboxes = document.querySelectorAll('.company-checkbox');
-        const selectAllButton = document.getElementById('select-all');
-        const sendToProjectButtons = document.querySelectorAll('.send-to-project');
-        const addProjectForm = document.getElementById('addProjectForm');
-        const projectDropdownMenu = document.querySelector('.dropdown-menu[aria-labelledby="send-to-project"]');
+document.addEventListener('DOMContentLoaded', function () {
+    const lanCheckboxes = document.querySelectorAll('.lan-checkbox');
+    const stadCheckboxes = document.querySelectorAll('.stad-checkbox');
+    const omradeCheckboxes = document.querySelectorAll('.omrade-checkbox');
+    const storlekCheckboxes = document.querySelectorAll('.storlek-checkbox');
+    //Select rows & send to project
+    const selectAllCheckbox = document.getElementById('select-all-checkbox');
+    const companyCheckboxes = document.querySelectorAll('.company-checkbox');
+    const selectAllButton = document.getElementById('select-all');
+    const sendToProjectButtons = document.querySelectorAll('.send-to-project');
+    const addProjectForm = document.getElementById('addProjectForm');
+    const projectDropdownMenu = document.querySelector('.dropdown-menu[aria-labelledby="send-to-project"]');
 
-        // När län-knappen klickas
-        lanCheckboxes.forEach(lan => {
-            lan.addEventListener('change', function () {
-                const lanId = lan.getAttribute('data-lan-id');
-                const stader = document.querySelectorAll(`.stad-checkbox[data-lan-id="${lanId}"]`);
+    // När län-knappen klickas
+    lanCheckboxes.forEach(lan => {
+        lan.addEventListener('change', function () {
+            const lanId = lan.getAttribute('data-lan-id');
+            const stader = document.querySelectorAll(`.stad-checkbox[data-lan-id="${lanId}"]`);
 
-                stader.forEach(stad => {
-                    stad.checked = lan.checked;
-                    stad.nextElementSibling.classList.toggle('active', lan.checked);
-                });
-            });
-        });
-
-        // När stad-knappen klickas
-        stadCheckboxes.forEach(stad => {
-            stad.addEventListener('change', function () {
-                stad.nextElementSibling.classList.toggle('active', stad.checked);
-
-                const lanId = stad.getAttribute('data-lan-id');
-                const lan = document.querySelector(`.lan-checkbox[data-lan-id="${lanId}"]`);
-                const allInLan = document.querySelectorAll(`.stad-checkbox[data-lan-id="${lanId}"]`);
-                const selected = Array.from(allInLan).every(el => el.checked);
-
-                lan.checked = selected;
-                lan.nextElementSibling.classList.toggle('active', selected);
-            });
-        });
-
-        // När verksamhetsomrade-knappen klickas
-        omradeCheckboxes.forEach(omrade => {
-            omrade.addEventListener('change', function () {
-                omrade.nextElementSibling.classList.toggle('active', omrade.checked);
-            });
-        });
-
-        // När storlek-knappen klickas
-        storlekCheckboxes.forEach(storlek => {
-            storlek.addEventListener('change', function () {
-                storlek.nextElementSibling.classList.toggle('active', storlek.checked);
-            });
-        });
-
-        // Välj alla foretag
-        selectAllButton.addEventListener('click', function () {
-            companyCheckboxes.forEach(checkbox => {
-                checkbox.checked = true;
-            });
-        });
-
-        // Skicka till projekt
-        sendToProjectButtons.forEach(button => {
-            button.addEventListener('click', function (event) {
-                event.preventDefault();
-                const projectId = button.getAttribute('data-project-id');
-                const selectedCompanies = Array.from(companyCheckboxes)
-                    .filter(checkbox => checkbox.checked)
-                    .map(checkbox => checkbox.value);
-
-                if (selectedCompanies.length > 0) {
-                    fetch("{% url 'add_companies_to_project' %}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': '{{ csrf_token }}'
-                        },
-                        body: JSON.stringify({
-                            project_id: projectId,
-                            company_ids: selectedCompanies
-                        })
-                    }).then(response => {
-                        if (response.ok) {
-                            // Visa en alert
-                            const alertContainer = document.createElement('div');
-                            alertContainer.classList.add('alert', 'alert-success', 'alert-dismissible', 'fade', 'show');
-                            alertContainer.setAttribute('role', 'alert');
-                            alertContainer.innerHTML = `
-                                Foretagen har lagts till i projektet, klicka ok for att uppdatera vyn!
-                                <button type="button" class="btn btn-primary" id="alert-ok-button">OK</button>
-                            `;
-                            document.body.prepend(alertContainer);
-
-							// Lägg till en event listener for att uppdatera tabellen när alerten stängs
-							alertContainer.querySelector('#alert-ok-button').addEventListener('click', function () {
-								alertContainer.remove();
-								location.reload();
-                            });
-                        } else {
-                            alert('Ett fel uppstod. Forsok igen.');
-                        }
-                    });
-                } else {
-                    alert('Välj minst ett foretag.');
-                }
-            });
-        });
-
-        // Lägg till projekt
-        addProjectForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-            const projectName = document.getElementById('projectName').value;
-
-            fetch("{% url 'add_project' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({
-                    name: projectName
-                })
-            }).then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Lägg till det nya projektet i dropdown-menyn
-                    const newProject = document.createElement('a');
-                    newProject.classList.add('dropdown-item', 'send-to-project');
-                    newProject.href = '#';
-                    newProject.setAttribute('data-project-id', data.project.id);
-                    newProject.textContent = data.project.name;
-                    projectDropdownMenu.appendChild(newProject);
-
-                    // Stäng modalen
-                    const addProjectModal = new bootstrap.Modal(document.getElementById('addProjectModal'));
-                    addProjectModal.hide();
-
-                    // Visa en alert
-					const alertContainer = document.createElement('div');
-					alertContainer.classList.add('alert', 'body-content', 'alert-success', 'alert-dismissible', 'fade', 'show');
-                    alertContainer.setAttribute('role', 'alert');
-                    alertContainer.innerHTML = `
-                       Ditt nya projekt är sparat!
-                        <button type="button" class="btn pillLG btn-outline-dark btn-large py-2 px-4" id="alert-ok-buttonNew">OK</button>
-
-                    `;
-                    document.body.prepend(alertContainer);
-
-                    // Ta bort alerten efter nagra sekunder
-                    setTimeout(() => {
-                        alertContainer.remove();
-                    }, 3000);
-
-                    // Rensa formularet
-                    addProjectForm.reset();
-                } else {
-                    alert('Ett fel uppstod. Forsok igen.');
-                }
+            stader.forEach(stad => {
+                stad.checked = lan.checked;
+                stad.nextElementSibling.classList.toggle('active', lan.checked);
             });
         });
     });
 
-	
-</script>
+    // När stad-knappen klickas
+    stadCheckboxes.forEach(stad => {
+        stad.addEventListener('change', function () {
+            stad.nextElementSibling.classList.toggle('active', stad.checked);
 
+            const lanId = stad.getAttribute('data-lan-id');
+            const lan = document.querySelector(`.lan-checkbox[data-lan-id="${lanId}"]`);
+            const allInLan = document.querySelectorAll(`.stad-checkbox[data-lan-id="${lanId}"]`);
+            const selected = Array.from(allInLan).every(el => el.checked);
+
+            lan.checked = selected;
+            lan.nextElementSibling.classList.toggle('active', selected);
+        });
+    });
+
+    // När verksamhetsomrade-knappen klickas
+    omradeCheckboxes.forEach(omrade => {
+        omrade.addEventListener('change', function () {
+            omrade.nextElementSibling.classList.toggle('active', omrade.checked);
+        });
+    });
+
+	// LIVE-SÖKNING FÖR OMRÅDEN I TABELL
+	const searchInput = document.getElementById('omradeSearch');
+	const omradeTableBody = document.getElementById('omradeTableBody');
+	const noOmradeMatch = document.getElementById('noOmradeMatch');
+
+	if (searchInput && omradeTableBody) {
+		searchInput.addEventListener('input', function () {
+			const filter = searchInput.value.toLowerCase();
+			let anyVisible = false;
+			omradeTableBody.querySelectorAll('.omrade-row').forEach(row => {
+				const text = row.textContent.toLowerCase();
+				if (text.includes(filter)) {
+					row.style.display = '';
+					anyVisible = true;
+				} else {
+					row.style.display = 'none';
+				}
+			});
+			if (!anyVisible) {
+				noOmradeMatch.style.display = '';
+			} else {
+				noOmradeMatch.style.display = 'none';
+			}
+		});
+	}
+
+	if (searchInput && omradeList) {
+		searchInput.addEventListener('input', filterOmraden);
+	}
+
+    // När storlek-knappen klickas
+    storlekCheckboxes.forEach(storlek => {
+        storlek.addEventListener('change', function () {
+            storlek.nextElementSibling.classList.toggle('active', storlek.checked);
+        });
+    });
+
+    // Välj alla foretag
+    selectAllButton.addEventListener('click', function () {
+        companyCheckboxes.forEach(checkbox => {
+            checkbox.checked = true;
+        });
+    });
+
+    // Skicka till projekt
+    sendToProjectButtons.forEach(button => {
+        button.addEventListener('click', function (event) {
+            event.preventDefault();
+            const projectId = button.getAttribute('data-project-id');
+            const selectedCompanies = Array.from(companyCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+
+            if (selectedCompanies.length > 0) {
+                fetch("{% url 'add_companies_to_project' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        project_id: projectId,
+                        company_ids: selectedCompanies
+                    })
+                }).then(response => {
+                    if (response.ok) {
+                        // Visa en alert
+                        const alertContainer = document.createElement('div');
+                        alertContainer.classList.add('alert', 'alert-success', 'alert-dismissible', 'fade', 'show');
+                        alertContainer.setAttribute('role', 'alert');
+                        alertContainer.innerHTML = `
+                            Foretagen har lagts till i projektet, klicka ok for att uppdatera vyn!
+                            <button type="button" class="btn btn-primary" id="alert-ok-button">OK</button>
+                        `;
+                        document.body.prepend(alertContainer);
+
+                        // Lägg till en event listener for att uppdatera tabellen när alerten stängs
+                        alertContainer.querySelector('#alert-ok-button').addEventListener('click', function () {
+                            alertContainer.remove();
+                            location.reload();
+                        });
+                    } else {
+                        alert('Ett fel uppstod. Forsok igen.');
+                    }
+                });
+            } else {
+                alert('Välj minst ett foretag.');
+            }
+        });
+    });
+
+    // Lägg till projekt
+    addProjectForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const projectName = document.getElementById('projectName').value;
+
+        fetch("{% url 'add_project' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                name: projectName
+            })
+        }).then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Lägg till det nya projektet i dropdown-menyn
+                const newProject = document.createElement('a');
+                newProject.classList.add('dropdown-item', 'send-to-project');
+                newProject.href = '#';
+                newProject.setAttribute('data-project-id', data.project.id);
+                newProject.textContent = data.project.name;
+                projectDropdownMenu.appendChild(newProject);
+
+                // Stäng modalen
+                const addProjectModal = new bootstrap.Modal(document.getElementById('addProjectModal'));
+                addProjectModal.hide();
+
+                // Visa en alert
+                const alertContainer = document.createElement('div');
+                alertContainer.classList.add('alert', 'body-content', 'alert-success', 'alert-dismissible', 'fade', 'show');
+                alertContainer.setAttribute('role', 'alert');
+                alertContainer.innerHTML = `
+                   Ditt nya projekt är sparat!
+                    <button type="button" class="btn pillLG btn-outline-dark btn-large py-2 px-4" id="alert-ok-buttonNew">OK</button>
+                `;
+                document.body.prepend(alertContainer);
+
+                // Ta bort alerten efter nagra sekunder
+                setTimeout(() => {
+                    alertContainer.remove();
+                }, 3000);
+
+                // Rensa formularet
+                addProjectForm.reset();
+            } else {
+                alert('Ett fel uppstod. Forsok igen.');
+            }
+        });
+    });
+});
+</script>
 
 
 

@@ -67,6 +67,13 @@ form-signin {
 .table-hover tbody tr:hover td {
     background-color: rgba( 34, 87, 183, 0.45 );
 }
+
+.table-headerinside {
+    background-color: red !important; /* Bakgrundsfärg för hela raden */
+    color: white !important; /* Textfärg för bättre kontrast */
+    font-weight: bold; /* Gör texten fet */
+}
+
 .center {
     align-items: center;
     justify-content:center;
@@ -338,9 +345,10 @@ input[type="checkbox"].input-validation-error {
     }
 }
 
-/*customer colors*/
-
-.blue {
+.accordion-body {
+    max-height: 500px;
+}
+    .blue {
     color: darkblue;
 }
 
@@ -392,7 +400,7 @@ input[type="checkbox"].input-validation-error {
 }
 
 .grey {
-    color: rgba(255, 255, 255, 0.2);
+    color: dimgrey;
 }
 
 .beige {

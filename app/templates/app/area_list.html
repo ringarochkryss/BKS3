@@ -204,7 +204,7 @@
 		formData.append('excelFile', excelFile);
 
 		// Skicka POST-förfrågan till backend
-		fetch('{% url "upload_excel" %}', {
+		fetch('{% url "upload_excel_areas" %}', {
 			method: 'POST',
 			headers: {
 				'X-CSRFToken': csrftoken // CSRF-token krävs av Django
@@ -345,31 +345,7 @@
 			});
 		};
 	}
-	//fanga fel i felmeddelande
-	fetch('{% url "edit_area" %}', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-CSRFToken': csrftoken
-		},
-		body: JSON.stringify({
-			id: id,
-			sorteringsordning: sorteringsordning,
-			namn: namn,
-			ikon: ikon,
-			farg_css_klass: fargCssKlass
-		})
-	}).then(response => response.json())
-		.then(data => {
-			if (data.success) {
-				location.reload(); // Reload the page to reflect the changes
-			} else {
-				alert('Failed to update the area: ' + data.message);
-			}
-		}).catch(error => {
-			console.error('Error:', error);
-			alert('An unexpected error occurred.');
-		});
+	
 
 	// Search Functionality
 	function searchAreaFunction() {
@@ -399,6 +375,31 @@
 				}
 			}
 		}
-	}</script>
+	}
+
+	// Add css-class when "Name" starts with "---"  (a way to use headers in this table)
+	//document.addEventListener('DOMContentLoaded', function () {
+	//	console.log("JavaScript körs!"); // Kontrollera att koden körs
+
+	//	var table = document.getElementById("areaTable");
+	//	if (!table) {
+	//		console.error("Tabellen med ID 'areaTable' hittades inte!");
+	//		return;
+	//	}
+
+	//	var rows = table.getElementsByTagName("tr");
+	//	for (var i = 1; i < rows.length; i++) { // Börja från 1 för att hoppa över tabellhuvudet
+	//		var cells = rows[i].getElementsByTagName("td"); // Hämta alla <td> i raden
+	//		for (var j = 0; j < cells.length; j++) {
+	//			var cellText = cells[j].textContent || cells[j].innerText;
+	//			if (cellText.includes("---")) { // Kontrollera om texten innehåller "---"
+	//				console.log("Cell med '---' hittad:", cellText); // Logga innehållet i cellen
+	//				cells[j].style.color = "red"; // Måla texten röd
+	//			}
+	//		}
+	//	}
+	//});
+
+</script>
 
 {% endblock %}

@@ -7,6 +7,7 @@ from django.urls import include, path
 from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from app import forms, views
+from app.views import upload_excel_areas
 from projects import views as project_views 
 
 urlpatterns = [
@@ -59,6 +60,6 @@ urlpatterns = [
     path('add_area/', views.add_area, name='add_area'),
     path('edit_area/', views.edit_area, name='edit_area'),
     path('delete_area/', views.delete_area, name='delete_area'),
-    path('upload_excel/', views.upload_excel, name='upload_excel'),
+    path('upload_excel_areas/', upload_excel_areas, name='upload_excel_areas'),
 
 ]

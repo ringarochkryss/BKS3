@@ -13,6 +13,7 @@ from locations.models import Stad, Lan, Land
 from projects.models import Project
 from django.views.decorators.csrf import csrf_exempt
 import json
+import pandas as pd
 
 def home(request):
     """Renders the home page."""
@@ -388,7 +389,43 @@ def upload_excel(request):
     return JsonResponse({'status': 'error', 'message': 'No file uploaded.'}, status=400)
 
 
+@csrf_exempt
+def upload_excel_areas(request):
+    """Handles uploading and processing an Excel file for areas."""
+    if request.method == 'POST' and request.FILES.get('excelFile'):
+        excel_file = request.FILES['excelFile']
 
+        try:
+            # Läs Excel-filen
+            df = pd.read_excel(excel_file)
+
+            # Kontrollera att nödvändiga kolumner finns
+            required_columns = ['A', 'B']  # A: Sorteringsordning, B: Namn
+            for col in required_columns:
+                if col not in df.columns:
+                    return JsonResponse({'status': 'error', 'message': f'Missing required column: {col}'}, status=400)
+
+            # Iterera över raderna och spara till databasen
+            for _, row in df.iterrows():
+                sorteringsordning = row['A']
+                namn = row['B']
+                ikon = row['C'] if 'C' in df.columns and pd.notna(row.get('C')) else 'fas fa-tag'
+                farg_css_klass = row['D'] if 'D' in df.columns and pd.notna(row.get('D')) else 'black'
+
+                # Skapa området
+                from companies.models import VerksamhetsOmraden
+                VerksamhetsOmraden.objects.create(
+                    sorteringsordning=sorteringsordning,
+                    namn=namn,
+                    ikon=ikon,
+                    farg_css_klass=farg_css_klass
+                )
+
+            return JsonResponse({'status': 'success', 'message': 'Areas imported successfully.'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+    return JsonResponse({'status': 'error', 'message': 'No file uploaded.'}, status=400)
 
 
 
