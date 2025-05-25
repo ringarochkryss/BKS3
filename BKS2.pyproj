@@ -4628,6 +4628,9 @@
     <Content Include=".env">
       <SubType>Code</SubType>
     </Content>
+    <Content Include=".python-version">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="app\static\app\favicons\site.webmanifest" />
     <Content Include="app\static\app\img\bkslogo.png" />
     <Content Include="app\static\app\img\bkslogosvtranspbg.PNG" />
